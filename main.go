@@ -12,14 +12,24 @@ import (
 )
 
 type model struct {
+	today        time.Time
+	selected     time.Time
 	width        int
 	height       int
 	currentMonth month.Month
 }
 
-func newModel(currentMonth month.Month) model {
+func newModel() model {
+	now := time.Now()
 	return model{
-		currentMonth: currentMonth,
+		today:    now,
+		selected: now,
+		currentMonth: month.Month{
+			Date:     now,
+			Today:    now,
+			Selected: now,
+			ShowYear: true,
+		},
 	}
 }
 
@@ -33,6 +43,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
+		case "h", "left":
+			m.selected = m.selected.AddDate(0, 0, -1)
+			m.currentMonth.Selected = m.selected
+		case "l", "right":
+			m.selected = m.selected.AddDate(0, 0, 1)
+			m.currentMonth.Selected = m.selected
+		case "j", "down":
+			m.selected = m.selected.AddDate(0, 0, 7)
+			m.currentMonth.Selected = m.selected
+		case "k", "up":
+			m.selected = m.selected.AddDate(0, 0, -7)
+			m.currentMonth.Selected = m.selected
 		}
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -43,20 +65,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	// Render a calendar for the current month.
-	s := m.currentMonth.View()
 	return lipgloss.Place(
 		m.width,
 		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
-		s,
+		m.currentMonth.View(),
 	)
 }
 
 func main() {
 	p := tea.NewProgram(
-		newModel(month.NewMonth(time.Now(), true)),
+		newModel(),
 		tea.WithAltScreen(),
+		tea.WithMouseCellMotion(),
 	)
 	if err := p.Start(); err != nil {
 		log.Fatalf("calendar has crashed: %v\n", err)

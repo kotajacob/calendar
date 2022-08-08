@@ -14,24 +14,27 @@ import (
 var (
 	headingStyle = lipgloss.NewStyle().Width(20).Align(lipgloss.Center)
 	gridStyle    = lipgloss.NewStyle().Width(20)
-	nowStyle     = lipgloss.NewStyle().Reverse(true)
 )
 
 type Month struct {
 	Date     time.Time
+	Today    time.Time
+	Selected time.Time
 	ShowYear bool
 }
 
-func NewMonth(t time.Time, showYear bool) Month {
+func NewMonth(date, today, selected time.Time, showYear bool) Month {
 	return Month{
-		Date:     t,
+		Date:     date,
+		Today:    today,
+		Selected: selected,
 		ShowYear: showYear,
 	}
 }
 
 func (m Month) View() string {
 	h := headingStyle.Render(heading(m.Date, m.ShowYear))
-	g := gridStyle.Render(grid(m.Date))
+	g := gridStyle.Render(grid(m.Date, m.Today, m.Selected))
 	return lipgloss.JoinVertical(lipgloss.Top, h, g)
 }
 
@@ -51,9 +54,9 @@ func heading(t time.Time, showYear bool) string {
 }
 
 // grid prints the out the date grid for a given month.
-func grid(t time.Time) string {
-	first_day := time.Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, t.Location())
-	last_day := time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, t.Location())
+func grid(date, today, selected time.Time) string {
+	first_day := time.Date(date.Year(), date.Month(), 1, 0, 0, 0, 0, date.Location())
+	last_day := time.Date(date.Year(), date.Month()+1, 0, 0, 0, 0, 0, date.Location())
 
 	var b strings.Builder
 	// Insert blank padding until first day.
@@ -63,11 +66,14 @@ func grid(t time.Time) string {
 
 	// Render the grid of days.
 	for i := first_day.Day(); i <= last_day.Day(); i++ {
-		if i == t.Day() {
-			b.WriteString(nowStyle.Render(fmt.Sprintf("%2.d", i)))
-		} else {
-			b.WriteString(fmt.Sprintf("%2.d", i))
+		day := lipgloss.NewStyle()
+		if i == today.Day() {
+			day = day.Copy().Foreground(lipgloss.Color("5"))
 		}
+		if i == selected.Day() {
+			day = day.Copy().Reverse(true)
+		}
+		b.WriteString(day.Render(fmt.Sprintf("%2.d", i)))
 		b.WriteString(" ")
 		if (i+int(first_day.Weekday()))%7 == 0 {
 			b.WriteString("\n")
