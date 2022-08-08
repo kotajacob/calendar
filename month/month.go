@@ -11,9 +11,11 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-const month_width = 20
-
-var nowStyle = lipgloss.NewStyle().Reverse(true)
+var (
+	headingStyle = lipgloss.NewStyle().Width(20).Align(lipgloss.Center)
+	gridStyle    = lipgloss.NewStyle().Width(20)
+	nowStyle     = lipgloss.NewStyle().Reverse(true)
+)
 
 type Month struct {
 	Date     time.Time
@@ -28,29 +30,24 @@ func NewMonth(t time.Time, showYear bool) Month {
 }
 
 func (m Month) View() string {
-	var b strings.Builder
-	b.WriteString(heading(m.Date, m.ShowYear))
-	b.WriteString(grid(m.Date))
-	return b.String()
+	h := headingStyle.Render(heading(m.Date, m.ShowYear))
+	g := gridStyle.Render(grid(m.Date))
+	return lipgloss.JoinVertical(lipgloss.Top, h, g)
 }
 
 // heading prints the month and optionally year centered with the weekday list
 // below it.
 func heading(t time.Time, showYear bool) string {
-	var month strings.Builder
-	month.WriteString(t.Month().String())
+	var heading strings.Builder
+	heading.WriteString(t.Month().String())
 	if showYear {
-		month.WriteString(" ")
-		month.WriteString(strconv.Itoa(t.Year()))
+		heading.WriteString(" ")
+		heading.WriteString(strconv.Itoa(t.Year()))
 	}
+	heading.WriteString("\n")
+	heading.WriteString("Su Mo Tu We Th Fr Sa")
 
-	left_len := (month_width - len(month.String())) / 2
-	var left strings.Builder
-	for i := 0; i < left_len; i++ {
-		left.WriteString(" ")
-	}
-
-	return left.String() + month.String() + "\n" + "Su Mo Tu We Th Fr Sa\n"
+	return heading.String()
 }
 
 // grid prints the out the date grid for a given month.

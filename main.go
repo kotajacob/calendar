@@ -4,11 +4,13 @@ package main
 
 import (
 	"log"
-	"strings"
+	"os"
 	"time"
 
 	"git.sr.ht/~kota/calendar/month"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/term"
 )
 
 type model struct {
@@ -37,12 +39,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	var b strings.Builder
+	termWidth, termHeight, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	// Render a calendar for the current month.
-	b.WriteString(m.currentMonth.View())
-
-	return b.String()
+	s := m.currentMonth.View()
+	return lipgloss.Place(
+		termWidth,
+		termHeight,
+		lipgloss.Center,
+		lipgloss.Center,
+		s,
+	)
 }
 
 func main() {
