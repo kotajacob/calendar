@@ -4,16 +4,16 @@ package main
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"git.sr.ht/~kota/calendar/month"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"golang.org/x/term"
 )
 
 type model struct {
+	width        int
+	height       int
 	currentMonth month.Month
 }
 
@@ -34,18 +34,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		}
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
 	}
 	return m, nil
 }
 
 func (m model) View() string {
-	termWidth, termHeight, _ := term.GetSize(int(os.Stdout.Fd()))
-
 	// Render a calendar for the current month.
 	s := m.currentMonth.View()
 	return lipgloss.Place(
-		termWidth,
-		termHeight,
+		m.width,
+		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
 		s,
