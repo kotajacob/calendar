@@ -9,27 +9,19 @@ import (
 	"git.sr.ht/~kota/calendar/month"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	zone "github.com/lrstanley/bubblezone"
 )
 
 type model struct {
-	today        time.Time
-	selected     time.Time
 	width        int
 	height       int
-	currentMonth month.Month
+	currentMonth tea.Model
 }
 
 func newModel() model {
 	now := time.Now()
 	return model{
-		today:    now,
-		selected: now,
-		currentMonth: month.Month{
-			Date:     now,
-			Today:    now,
-			Selected: now,
-			ShowYear: true,
-		},
+		currentMonth: month.NewMonth(now, now, now, true),
 	}
 }
 
@@ -44,18 +36,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "h", "left":
-			m.selected = m.selected.AddDate(0, 0, -1)
-			m.currentMonth.Selected = m.selected
+			return m.propagate(msg)
 		case "l", "right":
-			m.selected = m.selected.AddDate(0, 0, 1)
-			m.currentMonth.Selected = m.selected
+			return m.propagate(msg)
 		case "j", "down":
-			m.selected = m.selected.AddDate(0, 0, 7)
-			m.currentMonth.Selected = m.selected
+			return m.propagate(msg)
 		case "k", "up":
-			m.selected = m.selected.AddDate(0, 0, -7)
-			m.currentMonth.Selected = m.selected
+			return m.propagate(msg)
 		}
+	case tea.MouseMsg:
+		return m.propagate(msg)
+
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
@@ -63,18 +54,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m *model) propagate(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Propagate to all children.
+	var c tea.Cmd
+	m.currentMonth, c = m.currentMonth.Update(msg)
+	return m, c
+}
+
 func (m model) View() string {
 	// Render a calendar for the current month.
-	return lipgloss.Place(
+	return zone.Scan(lipgloss.Place(
 		m.width,
 		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
 		m.currentMonth.View(),
-	)
+	))
 }
 
 func main() {
+	zone.NewGlobal()
 	p := tea.NewProgram(
 		newModel(),
 		tea.WithAltScreen(),
