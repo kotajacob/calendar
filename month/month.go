@@ -13,12 +13,17 @@ import (
 	zone "github.com/lrstanley/bubblezone"
 )
 
+const MonthHeight = 8
+const MonthWidth = 20
+
 var (
-	headingStyle = lipgloss.NewStyle().Width(20).Align(lipgloss.Center)
-	gridStyle    = lipgloss.NewStyle().Width(20)
+	headingStyle = lipgloss.NewStyle().Width(MonthWidth).Align(lipgloss.Center)
+	gridStyle    = lipgloss.NewStyle().Width(MonthWidth)
+	inactive     = lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
 )
 
-type Month struct {
+// Model is the Bubble Tea model for this month element.
+type Model struct {
 	id       string
 	date     time.Time
 	today    time.Time
@@ -26,9 +31,10 @@ type Month struct {
 	showYear bool
 }
 
-func NewMonth(date, today, selected time.Time, showYear bool) Month {
-	return Month{
-		id:       zone.NewPrefix(),
+// New creates a new month model.
+func New(date, today, selected time.Time, showYear bool) Model {
+	return Model{
+		id:       date.Format("2006-01"),
 		date:     date,
 		today:    today,
 		selected: selected,
@@ -36,16 +42,16 @@ func NewMonth(date, today, selected time.Time, showYear bool) Month {
 	}
 }
 
-func (m Month) Init() tea.Cmd {
+// Init the month in Bubble Tea.
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m Month) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+// Updates the month in the Bubble Tea update loop.
+func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
-			return m, tea.Quit
 		case "h", "left":
 			m.selected = m.selected.AddDate(0, 0, -1)
 		case "l", "right":
@@ -61,10 +67,20 @@ func (m Month) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		last := lastDay(m.date)
-		for i := 1; i < last.Day(); i++ {
-			if zone.Get(m.id + strconv.Itoa(i)).InBounds(msg) {
-				v := i - m.selected.Day()
-				m.selected = m.selected.AddDate(0, 0, v)
+		for day := 1; day <= last.Day(); day++ {
+			if zone.Get(m.id + "-" + strconv.Itoa(day)).InBounds(msg) {
+				t, err := time.ParseInLocation(
+					"2006-01",
+					m.id,
+					m.date.Location(),
+				)
+				if err != nil {
+					return m, nil
+				}
+				year := t.Year()
+				month := t.Month()
+
+				m.selected = time.Date(year, month, day, 0, 0, 0, 0, m.date.Location())
 				break
 			}
 		}
@@ -73,15 +89,27 @@ func (m Month) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Month) View() string {
+// View renders the month in its current state.
+func (m Model) View() string {
 	h := headingStyle.Render(m.heading())
 	g := gridStyle.Render(m.grid())
 	return lipgloss.JoinVertical(lipgloss.Top, h, g)
 }
 
+// Selected returns the current selection (from the perspective of this month).
+func (m Model) Selected() time.Time {
+	return m.selected
+}
+
+// Select updates the selected time.
+func (m Model) Select(t time.Time) Model {
+	m.selected = t
+	return m
+}
+
 // heading prints the month and optionally year centered with the weekday list
 // below it.
-func (m Month) heading() string {
+func (m Model) heading() string {
 	var heading strings.Builder
 	heading.WriteString(m.date.Month().String())
 	if m.showYear {
@@ -91,11 +119,15 @@ func (m Month) heading() string {
 	heading.WriteString("\n")
 	heading.WriteString("Su Mo Tu We Th Fr Sa")
 
-	return heading.String()
+	style := headingStyle.Copy()
+	if !sameMonth(m.date, m.selected) {
+		style.Inherit(inactive)
+	}
+	return style.Render(heading.String())
 }
 
 // grid prints the out the date grid for a given month.
-func (m Month) grid() string {
+func (m Model) grid() string {
 	first := firstDay(m.date)
 	last := lastDay(m.date)
 
@@ -106,17 +138,21 @@ func (m Month) grid() string {
 	}
 
 	// Render the grid of days.
-	for i := first.Day(); i <= last.Day(); i++ {
+	for i := 1; i <= last.Day(); i++ {
 		day := lipgloss.NewStyle()
-		if i == m.today.Day() {
-			day = day.Copy().Foreground(lipgloss.Color("5"))
+		if sameMonth(m.date, m.selected) {
+			if i == m.selected.Day() {
+				day = day.Copy().Reverse(true)
+			}
+		} else {
+			day = day.Inherit(inactive)
 		}
-		if i == m.selected.Day() {
-			day = day.Copy().Reverse(true)
+		if sameMonth(m.date, m.today) && i == m.today.Day() {
+			day = day.Copy().Foreground(lipgloss.Color("2"))
 		}
 		b.WriteString(
 			day.Render(zone.Mark(
-				m.id+strconv.Itoa(i),
+				m.id+"-"+strconv.Itoa(i),
 				fmt.Sprintf("%2.d", i),
 			)),
 		)
@@ -136,4 +172,12 @@ func firstDay(t time.Time) time.Time {
 // lastDay returns a time representing the last day of the month for time t.
 func lastDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, t.Location())
+}
+
+// sameMonth returns true if both times are in the same month and year.
+func sameMonth(x, y time.Time) bool {
+	if x.Year() == y.Year() && int(x.Month()) == int(y.Month()) {
+		return true
+	}
+	return false
 }
