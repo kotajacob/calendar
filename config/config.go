@@ -12,16 +12,30 @@ import (
 
 // Config represents the toml configuration file.
 type Config struct {
-	Today    string
-	Inactive string
+	TodayColor        string
+	InactiveColor     string
+	NotePath          string
+	LeftPadding       int
+	RightPadding      int
+	PreviewLeftMargin int
+	PreviewPadding    int
+	PreviewMinWidth   int
+	PreviewMaxWidth   int
 }
 
 // Load a configuration file from the user's config directory, the system config
 // directory, or as a final fallback return default config settings.
 func Load() (*Config, error) {
 	conf := Config{
-		Today:    "2",
-		Inactive: "8",
+		TodayColor:        "2",
+		InactiveColor:     "8",
+		LeftPadding:       2,
+		RightPadding:      1,
+		NotePath:          "$HOME/.local/share/calendar/2006-01-02.md",
+		PreviewLeftMargin: 3,
+		PreviewPadding:    1,
+		PreviewMinWidth:   40,
+		PreviewMaxWidth:   80,
 	}
 
 	scope := gap.NewScope(gap.User, "calendar")

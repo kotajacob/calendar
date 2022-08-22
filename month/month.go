@@ -18,19 +18,20 @@ const MonthHeight = 8
 const MonthWidth = 20
 
 var (
+	monthstyle   = lipgloss.NewStyle().Height(MonthHeight)
 	headingStyle = lipgloss.NewStyle().Width(MonthWidth).Align(lipgloss.Center)
 	gridStyle    = lipgloss.NewStyle().Width(MonthWidth)
 )
 
 // Model is the Bubble Tea model for this month element.
 type Model struct {
-	id       string
-	date     time.Time
-	today    time.Time
-	selected time.Time
-	showYear bool
-
-	config *config.Config
+	date      time.Time
+	today     time.Time
+	selected  time.Time
+	config    *config.Config
+	id        string
+	showYear  bool
+	isFocused bool
 }
 
 // New creates a new month model.
@@ -58,6 +59,9 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		if !m.isFocused {
+			return m, nil
+		}
 		switch msg.String() {
 		case "h", "left":
 			m.selected = m.selected.AddDate(0, 0, -1)
@@ -96,13 +100,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, nil
 }
 
-// View renders the month in its current state.
-func (m Model) View() string {
-	h := headingStyle.Render(m.heading())
-	g := gridStyle.Render(m.grid())
-	return lipgloss.JoinVertical(lipgloss.Top, h, g)
-}
-
 // Selected returns the current selection (from the perspective of this month).
 func (m Model) Selected() time.Time {
 	return m.selected
@@ -112,6 +109,24 @@ func (m Model) Selected() time.Time {
 func (m Model) Select(t time.Time) Model {
 	m.selected = t
 	return m
+}
+
+// Focus the preview.
+func (m *Model) Focus() {
+	m.isFocused = true
+}
+
+// Unfocus the preview.
+func (m *Model) Unfocus() {
+	m.isFocused = false
+}
+
+// View renders the month in its current state.
+func (m Model) View() string {
+	h := headingStyle.Render(m.heading())
+	g := gridStyle.Render(m.grid())
+
+	return monthstyle.Render(lipgloss.JoinVertical(lipgloss.Top, h, g))
 }
 
 // heading prints the month and optionally year centered with the weekday list
@@ -129,7 +144,7 @@ func (m Model) heading() string {
 	style := headingStyle.Copy()
 	if !sameMonth(m.date, m.selected) {
 		style.Inherit(
-			lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.Inactive)),
+			lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 		)
 	}
 	return style.Render(heading.String())
@@ -155,11 +170,11 @@ func (m Model) grid() string {
 			}
 		} else {
 			day = day.Inherit(
-				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.Inactive)),
+				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 			)
 		}
 		if sameMonth(m.date, m.today) && i == m.today.Day() {
-			day = day.Copy().Foreground(lipgloss.Color(m.config.Today))
+			day = day.Copy().Foreground(lipgloss.Color(m.config.TodayColor))
 		}
 		b.WriteString(
 			day.Render(zone.Mark(

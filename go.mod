@@ -8,6 +8,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.5.0
 	github.com/lrstanley/bubblezone v0.0.0-20220729154607-e408d1dc3890
 	github.com/muesli/go-app-paths v0.2.2
+	github.com/muesli/reflow v0.3.0
 )
 
 require (
@@ -18,7 +19,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/muesli/ansi v0.0.0-20211031195517-c9f0611b6c70 // indirect
 	github.com/muesli/cancelreader v0.2.1 // indirect
-	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.12.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect

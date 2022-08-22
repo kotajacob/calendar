@@ -14,11 +14,10 @@ import (
 
 // model is the top level Bubble Tea model for the whole program.
 type model struct {
-	width  int
-	height int
-
-	calendar calendar.Model
 	config   *config.Config
+	calendar calendar.Model
+	width    int
+	height   int
 }
 
 // Init the model in Bubble Tea.
