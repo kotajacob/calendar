@@ -1,0 +1,4 @@
+# Default calendar configuration.
+# Store in "~/.config/calendar", "/etc/xdg/calendar", "/etc/calendar".
+Today = "3"
+Inactive = "8"

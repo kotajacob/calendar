@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"git.sr.ht/~kota/calendar/calendar"
+	"git.sr.ht/~kota/calendar/config"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
@@ -13,9 +14,11 @@ import (
 
 // model is the top level Bubble Tea model for the whole program.
 type model struct {
-	width    int
-	height   int
+	width  int
+	height int
+
 	calendar calendar.Model
+	config   *config.Config
 }
 
 // Init the model in Bubble Tea.
@@ -59,10 +62,19 @@ func (m model) View() string {
 }
 
 func main() {
+	log.SetPrefix("")
+	log.SetFlags(0)
+
+	conf, err := config.Load()
+	if err != nil {
+		log.Fatalf("failed to load config: %v\n", err)
+	}
+
 	zone.NewGlobal()
 	p := tea.NewProgram(
 		model{
-			calendar: calendar.New(),
+			calendar: calendar.New(conf),
+			config:   conf,
 		},
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"git.sr.ht/~kota/calendar/config"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
@@ -19,7 +20,6 @@ const MonthWidth = 20
 var (
 	headingStyle = lipgloss.NewStyle().Width(MonthWidth).Align(lipgloss.Center)
 	gridStyle    = lipgloss.NewStyle().Width(MonthWidth)
-	inactive     = lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
 )
 
 // Model is the Bubble Tea model for this month element.
@@ -29,16 +29,23 @@ type Model struct {
 	today    time.Time
 	selected time.Time
 	showYear bool
+
+	config *config.Config
 }
 
 // New creates a new month model.
-func New(date, today, selected time.Time, showYear bool) Model {
+func New(
+	date, today, selected time.Time,
+	showYear bool,
+	conf *config.Config,
+) Model {
 	return Model{
 		id:       date.Format("2006-01"),
 		date:     date,
 		today:    today,
 		selected: selected,
 		showYear: showYear,
+		config:   conf,
 	}
 }
 
@@ -121,7 +128,9 @@ func (m Model) heading() string {
 
 	style := headingStyle.Copy()
 	if !sameMonth(m.date, m.selected) {
-		style.Inherit(inactive)
+		style.Inherit(
+			lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.Inactive)),
+		)
 	}
 	return style.Render(heading.String())
 }
@@ -145,10 +154,12 @@ func (m Model) grid() string {
 				day = day.Copy().Reverse(true)
 			}
 		} else {
-			day = day.Inherit(inactive)
+			day = day.Inherit(
+				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.Inactive)),
+			)
 		}
 		if sameMonth(m.date, m.today) && i == m.today.Day() {
-			day = day.Copy().Foreground(lipgloss.Color("2"))
+			day = day.Copy().Foreground(lipgloss.Color(m.config.Today))
 		}
 		b.WriteString(
 			day.Render(zone.Mark(

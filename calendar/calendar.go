@@ -5,6 +5,7 @@ package calendar
 import (
 	"time"
 
+	"git.sr.ht/~kota/calendar/config"
 	"git.sr.ht/~kota/calendar/month"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -20,16 +21,20 @@ type Model struct {
 	today    time.Time
 	selected time.Time
 	months   []month.Model
+
+	config *config.Config
 }
 
-func New() Model {
+// New creates a new calendar model.
+func New(conf *config.Config) Model {
 	now := time.Now()
 	return Model{
 		today:    now,
 		selected: now,
 		months: []month.Model{
-			month.New(now, now, now, true),
+			month.New(now, now, now, true, conf),
 		},
+		config: conf,
 	}
 }
 
@@ -87,8 +92,20 @@ func (m Model) resize() Model {
 	// different size options.
 	switch want {
 	case 3:
-		last := month.New(lastMonth(m.selected), m.today, m.selected, true)
-		next := month.New(nextMonth(m.selected), m.today, m.selected, true)
+		last := month.New(
+			lastMonth(m.selected),
+			m.today,
+			m.selected,
+			true,
+			m.config,
+		)
+		next := month.New(
+			nextMonth(m.selected),
+			m.today,
+			m.selected,
+			true,
+			m.config,
+		)
 		m.months = append([]month.Model{last}, m.months...)
 		m.months = append(m.months, next)
 	default:
