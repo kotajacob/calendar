@@ -23,9 +23,9 @@ const (
 	focusPreview
 )
 
-// EditorFinishedMsg is a tea.Msg returned when the spawned editor process
+// editorFinishedMsg is a tea.Msg returned when the spawned editor process
 // returns.
-type EditorFinishedMsg struct{ err error }
+type editorFinishedMsg struct{ err error }
 
 // Model is the Bubble Tea model for this calendar element. The calendar is a
 // thin wrapper for the month elements. It creates and destroys them based on
@@ -78,7 +78,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		case "enter":
 			path := m.selected.Format(os.ExpandEnv(m.config.NotePath))
 			cmd := tea.ExecProcess(exec.Command("vim", path), func(err error) tea.Msg {
-				return EditorFinishedMsg{err: err}
+				return editorFinishedMsg{err: err}
 			})
 			return m, cmd
 		case "tab":
@@ -95,7 +95,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 
 		m = m.resize()
-	case EditorFinishedMsg:
+	case editorFinishedMsg:
 		// Reload the note when the user exits their editor.
 		m = m.Select(m.selected)
 	}
