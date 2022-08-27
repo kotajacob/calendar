@@ -121,6 +121,11 @@ func (m *Model) Unfocus() {
 	m.isFocused = false
 }
 
+// SetToday sets the today value to a new time.
+func (m *Model) SetToday(t time.Time) {
+	m.today = t
+}
+
 // View renders the month in its current state.
 func (m Model) View() string {
 	h := headingStyle.Render(m.heading())

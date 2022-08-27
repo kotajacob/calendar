@@ -205,6 +205,14 @@ func (m *Model) ToggleFocus() {
 	}
 }
 
+// SetToday sets the today value to a new time.
+func (m *Model) SetToday(t time.Time) {
+	m.today = t
+	for id := range m.months {
+		m.months[id].SetToday(t)
+	}
+}
+
 // loadNote reads a note file for a given time.
 // The given path should describe where the note would be located for this
 // predefined time:

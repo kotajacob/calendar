@@ -4,6 +4,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"time"
 
 	"git.sr.ht/~kota/calendar/calendar"
 	"git.sr.ht/~kota/calendar/config"
@@ -11,6 +13,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
 )
+
+// tickerMsg is a tea.Msg which should be returned with the current time.
+type tickerMsg time.Time
 
 // model is the top level Bubble Tea model for the whole program.
 type model struct {
@@ -22,7 +27,29 @@ type model struct {
 
 // Init the model in Bubble Tea.
 func (m model) Init() tea.Cmd {
-	return nil
+	return fiveMinutes()
+}
+
+// fiveMinutes starts a timer which will return a tickerMsg after five minutes.
+// This is used to update the "today" value on the calendar.
+func fiveMinutes() tea.Cmd {
+	now := time.Now()
+	tomorrow := time.Date(
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		now.Hour(),
+		now.Minute()+5,
+		0,
+		0,
+		now.Location(),
+	)
+	d := tomorrow.Sub(now)
+
+	log.Println(d)
+	return tea.Tick(d, func(t time.Time) tea.Msg {
+		return tickerMsg(t)
+	})
 }
 
 // Updates the model in the Bubble Tea update loop.
@@ -37,6 +64,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+	case tickerMsg:
+		// Update the "today" value and kick off another timer.
+		m.calendar.SetToday(time.Now())
+		return m, fiveMinutes()
 	}
 	return m.propagate(msg)
 }
