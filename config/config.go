@@ -5,6 +5,7 @@ package config
 import (
 	"errors"
 	"io/fs"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	gap "github.com/muesli/go-app-paths"
@@ -15,6 +16,7 @@ type Config struct {
 	TodayColor        string
 	InactiveColor     string
 	NotePath          string
+	Editor            string
 	LeftPadding       int
 	RightPadding      int
 	PreviewLeftMargin int
@@ -26,12 +28,20 @@ type Config struct {
 // Load a configuration file from the user's config directory, the system config
 // directory, or as a final fallback return default config settings.
 func Load() (*Config, error) {
+	editor := "vi"
+	if edvar, ok := os.LookupEnv("EDITOR"); ok {
+		editor = edvar
+	}
+	if visvar, ok := os.LookupEnv("VISUAL"); ok {
+		editor = visvar
+	}
 	conf := Config{
 		TodayColor:        "2",
 		InactiveColor:     "8",
 		LeftPadding:       2,
 		RightPadding:      1,
 		NotePath:          "$HOME/.local/share/calendar/2006-01-02.md",
+		Editor:            editor,
 		PreviewLeftMargin: 3,
 		PreviewPadding:    1,
 		PreviewMinWidth:   40,

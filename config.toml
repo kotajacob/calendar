@@ -26,6 +26,10 @@ RightPadding = 1
 # meant to be displayed to the user).
 NotePath = "$HOME/.local/share/calendar/2006-01-02.md"
 
+# You may specify an editor to use when opening notes. If unspecified, we will
+# respect the environment variables VISUAL or EDITOR or fallback to using vi.
+# Editor = "nvim"
+
 # Padding, LeftMargin, MinWidth, and MaxWidth for the preview window.
 # 
 # Padding and margin are included within min and max width. 
