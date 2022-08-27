@@ -34,6 +34,11 @@ which works better than you might expect, but is still kind of annoying:
 autostash alias rp='fd -e go | entr -r alacritty --class "Alacritty-entr,Alacritty-entr" -o window.position.x=1380 -o window.position.y=82 -e go run .'
 ```
 
+### Logging
+Since `calendar` is an interactive TUI program we can't just log things to the
+terminal. Instead, `export DEBUG=1`, add some `log.Println` statements, and
+`tail -f debug.log` when you're running calendar to see your logs.
+
 # Author
 Written and maintained by Dakota Walsh.
 Up-to-date sources can be found at https://git.sr.ht/~kota/calendar/

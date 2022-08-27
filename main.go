@@ -63,6 +63,13 @@ func (m model) View() string {
 func main() {
 	log.SetPrefix("")
 	log.SetFlags(0)
+	if len(os.Getenv("DEBUG")) > 0 {
+		f, err := tea.LogToFile("debug.log", "debug")
+		if err != nil {
+			log.Fatalf("failed setting up debug logging: %v\n", err)
+		}
+		defer f.Close()
+	}
 
 	conf, err := config.Load()
 	if err != nil {
