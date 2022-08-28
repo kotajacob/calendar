@@ -18,12 +18,22 @@ If your terminal is wide enough you will see a preview window next to the month
 widget(s) with the selected day's note. You can configure a path to store these
 notes and press `enter` to open them in your favorite editor.
 
+## Build and Install
+A Makefile is provided for easy installation. You can use it to tweak the
+install path and compiler flags. If you know of a distrobution package get in
+touch and I will add a note here.
+```
+make
+sudo make install
+```
+
 ## Configuration
 I've written this tool to be fairly configurable. Padding, colors, path to your
 notes and of course your editor can all be configured in
 `XDG_CONFIG_HOME/calendar/config.toml`. Normally, on unix systems that would be
 `$HOME/.config/config.toml`. This repository contains an example config.toml
-showing every option with detailed explanatory comments.
+showing every option with detailed explanatory comments. Additionally, every
+option is detailed in `man 5 calendar-config`.
 
 ## Development
 ### Hot Reload

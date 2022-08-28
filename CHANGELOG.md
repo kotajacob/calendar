@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Edit selected note file in editor.
 - Update "today" every night when the new day rolls over.
 - TOML config file.
+- Man pages detailing usage and configuration.
