@@ -3,6 +3,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"os"
 	"time"
@@ -46,7 +47,7 @@ func fiveMinutes() tea.Cmd {
 	)
 	d := tomorrow.Sub(now)
 
-	log.Println(d)
+	log.Println("checking current date in:", d)
 	return tea.Tick(d, func(t time.Time) tea.Msg {
 		return tickerMsg(t)
 	})
@@ -94,6 +95,7 @@ func (m model) View() string {
 func main() {
 	log.SetPrefix("")
 	log.SetFlags(0)
+	log.SetOutput(io.Discard)
 	if len(os.Getenv("DEBUG")) > 0 {
 		f, err := tea.LogToFile("debug.log", "debug")
 		if err != nil {
