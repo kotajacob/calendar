@@ -1,8 +1,8 @@
 .POSIX:
-PREFIX = /usr/local
-MANPREFIX = $(PREFIX)/share/man
-GO = go
-GOFLAGS =
+PREFIX ?= /usr/local
+MANPREFIX ?= $(PREFIX)/share/man
+GO ?= go
+GOFLAGS ?=
 
 all: calendar
 
