@@ -77,9 +77,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			m.SetFocus(focusMonths)
 		case "enter":
 			path := m.selected.Format(os.ExpandEnv(m.config.NotePath))
-			cmd := tea.ExecProcess(exec.Command("vim", path), func(err error) tea.Msg {
-				return editorFinishedMsg{err: err}
-			})
+			cmd := tea.ExecProcess(
+				exec.Command("vim", path),
+				func(err error) tea.Msg {
+					return editorFinishedMsg{err: err}
+				})
 			return m, cmd
 		case "tab":
 			m.ToggleFocus()
