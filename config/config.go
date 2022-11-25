@@ -25,27 +25,31 @@ type Config struct {
 	PreviewMaxWidth   int
 }
 
-// Load a configuration file from the user's config directory, the system config
-// directory, or as a final fallback return default config settings.
-func Load() (*Config, error) {
-	editor := "vi"
-	if edvar, ok := os.LookupEnv("EDITOR"); ok {
-		editor = edvar
-	}
-	if visvar, ok := os.LookupEnv("VISUAL"); ok {
-		editor = visvar
-	}
-	conf := Config{
+// Default returns the default configuration.
+func Default() *Config {
+	return &Config{
 		TodayColor:        "2",
 		InactiveColor:     "8",
 		LeftPadding:       2,
 		RightPadding:      1,
 		NotePath:          "$HOME/.local/share/calendar/2006-01-02.md",
-		Editor:            editor,
+		Editor:            "vi",
 		PreviewLeftMargin: 3,
 		PreviewPadding:    1,
 		PreviewMinWidth:   40,
 		PreviewMaxWidth:   80,
+	}
+}
+
+// Load a configuration file from the user's config directory, the system config
+// directory, or as a final fallback return default config settings.
+func Load() (*Config, error) {
+	conf := Default()
+	if edvar, ok := os.LookupEnv("EDITOR"); ok {
+		conf.Editor = edvar
+	}
+	if visvar, ok := os.LookupEnv("VISUAL"); ok {
+		conf.Editor = visvar
 	}
 
 	scope := gap.NewScope(gap.User, "calendar")
@@ -54,9 +58,9 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	_, err = toml.DecodeFile(configPath, &conf)
+	_, err = toml.DecodeFile(configPath, conf)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return nil, err
 	}
-	return &conf, nil
+	return conf, nil
 }
