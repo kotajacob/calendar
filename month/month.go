@@ -3,6 +3,7 @@
 package month
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -211,4 +212,16 @@ func sameMonth(x, y time.Time) bool {
 		return true
 	}
 	return false
+}
+
+// String prints out the month's data for debugging.
+func (m Model) String() string {
+	var b bytes.Buffer
+	b.WriteString(fmt.Sprintln("date:", m.date))
+	b.WriteString(fmt.Sprintln("today:", m.today))
+	b.WriteString(fmt.Sprintln("selected:", m.selected))
+	b.WriteString(fmt.Sprintln("id:", m.id))
+	b.WriteString(fmt.Sprintln("show year:", m.showYear))
+	b.WriteString(fmt.Sprintln("is focused:", m.isFocused))
+	return b.String()
 }
