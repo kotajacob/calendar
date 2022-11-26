@@ -47,7 +47,6 @@ func fiveMinutes() tea.Cmd {
 	)
 	d := tomorrow.Sub(now)
 
-	log.Println("checking current date in:", d)
 	return tea.Tick(d, func(t time.Time) tea.Msg {
 		return tickerMsg(t)
 	})
