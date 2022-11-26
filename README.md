@@ -55,5 +55,14 @@ terminal. Instead, `export DEBUG=1`, add some `log.Println` statements, and
 Written and maintained by Dakota Walsh.
 Up-to-date sources can be found at https://git.sr.ht/~kota/calendar/
 
+## Contributing
+See CONTRIBUTING.md for some tips! This project is hosted on sourcehut and uses
+an [email based workflow](https://git-send-email.io/).
+
+You can just send your patches, questions, or anything else to my
+[public inbox](https://lists.sr.ht/~kota/public-inbox). If you have issues
+figuring it out no worries, I'm happy to help out! If you're not sure if your
+patch is quite right, send it anyway and I can help clean it up.
+
 # License
 GNU GPL version 3 only, see LICENSE.
