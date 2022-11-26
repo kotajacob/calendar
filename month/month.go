@@ -101,6 +101,11 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 	return m, nil
 }
 
+// Date returns this month's date.
+func (m Month) Date() time.Time {
+	return m.date
+}
+
 // Selected returns the current selection (from the perspective of this month).
 func (m Month) Selected() time.Time {
 	return m.selected

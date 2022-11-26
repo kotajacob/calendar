@@ -129,62 +129,25 @@ func (c Calendar) propagate(msg tea.Msg) (Calendar, tea.Cmd) {
 	return c, tea.Batch(cmds...)
 }
 
-// resize the number of months being displayed to fill the window size.
-func (c Calendar) resize() Calendar {
-	var want int
-	switch {
-	case c.height > 3*month.MonthHeight:
-		want = 3
-	default:
-		want = 1
-	}
-
-	if len(c.months) == want {
-		return c
-	}
-
-	// TODO: Revise this to find the "center" month once we have more than 2
-	// different size options.
-	switch want {
-	case 3:
-		last := month.New(
-			lastMonth(c.selected),
-			c.today,
-			c.selected,
-			true,
-			c.config,
-		)
-		next := month.New(
-			nextMonth(c.selected),
-			c.today,
-			c.selected,
-			true,
-			c.config,
-		)
-		c.months = append([]month.Month{last}, c.months...)
-		c.months = append(c.months, next)
-	default:
-		c.months = []month.Month{month.New(
-			c.selected,
-			c.today,
-			c.selected,
-			true,
-			c.config,
-		)}
-	}
-
-	// Restore focus. It gets lots when resizing.
-	c.SetFocus(c.focus)
-	return c
-}
-
 // Select a different date. This updates the selection on the calendar, all of
 // it's months, and the preview window. It also sets the focus to the months.
 func (c Calendar) Select(t time.Time) Calendar {
 	c.selected = t
-	for i, month := range c.months {
-		c.months[i] = month.Select(t)
+
+	// If the selection has moved "off-screen" we need to rebuild the month
+	// list.
+	offScreen := true
+	for i, m := range c.months {
+		if month.SameMonth(m.Date(), t) {
+			offScreen = false
+		}
+		c.months[i] = m.Select(t)
 	}
+
+	if offScreen {
+		c = c.resize()
+	}
+
 	c.preview = c.preview.SetContent(loadNote(t, c.config.NotePath))
 	c.SetFocus(focusMonths)
 	return c
