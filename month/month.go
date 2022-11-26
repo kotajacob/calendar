@@ -148,7 +148,7 @@ func (m Month) heading() string {
 	heading.WriteString("Su Mo Tu We Th Fr Sa")
 
 	style := headingStyle.Copy()
-	if !sameMonth(m.date, m.selected) {
+	if !SameMonth(m.date, m.selected) {
 		style.Inherit(
 			lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 		)
@@ -170,7 +170,7 @@ func (m Month) grid() string {
 	// Render the grid of days.
 	for i := 1; i <= last.Day(); i++ {
 		day := lipgloss.NewStyle()
-		if sameMonth(m.date, m.selected) {
+		if SameMonth(m.date, m.selected) {
 			if i == m.selected.Day() {
 				day = day.Copy().Reverse(true)
 			}
@@ -179,7 +179,7 @@ func (m Month) grid() string {
 				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 			)
 		}
-		if sameMonth(m.date, m.today) && i == m.today.Day() {
+		if SameMonth(m.date, m.today) && i == m.today.Day() {
 			day = day.Copy().Foreground(lipgloss.Color(m.config.TodayColor))
 		}
 		b.WriteString(
@@ -206,8 +206,8 @@ func lastDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, t.Location())
 }
 
-// sameMonth returns true if both times are in the same month and year.
-func sameMonth(x, y time.Time) bool {
+// SameMonth returns true if both times are in the same month and year.
+func SameMonth(x, y time.Time) bool {
 	if x.Year() == y.Year() && int(x.Month()) == int(y.Month()) {
 		return true
 	}
