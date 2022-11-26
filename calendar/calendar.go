@@ -222,14 +222,20 @@ func (c Calendar) View() string {
 	}
 
 	// Build a slice of rendered months.
-	var months []string
+	// The slice begins with an empty string to add a blank line of padding at
+	// the top of the window. This is to make it line up with the preview
+	// window, which contains a blank line or a a border at the top (depending
+	// on focus).
+	months := []string{""}
 	for _, month := range c.months {
 		months = append(months, month.View())
 	}
 
-	return c.style.Render(lipgloss.JoinHorizontal(
+	r := c.style.Render(lipgloss.JoinHorizontal(
 		lipgloss.Center,
 		lipgloss.JoinVertical(lipgloss.Center, months...),
 		c.preview.View(),
 	))
+
+	return r
 }

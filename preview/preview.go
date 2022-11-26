@@ -191,9 +191,6 @@ func (m Model) View() string {
 
 	// Show empty preview window even when there's no content.
 	visible := m.visibleLines()
-	// if len(visible) == 0 {
-	// 	return ""
-	// }
 
 	// Fill empty space with newlines
 	extraLines := ""
