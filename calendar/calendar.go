@@ -12,6 +12,7 @@ import (
 	"git.sr.ht/~kota/calendar/config"
 	"git.sr.ht/~kota/calendar/month"
 	"git.sr.ht/~kota/calendar/preview"
+	"github.com/atotto/clipboard"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -85,6 +86,8 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 			return c, cmd
 		case "tab":
 			c.ToggleFocus()
+		case "y":
+			clipboard.WriteAll(c.selected.Format("2006-01-02"))
 		}
 	case tea.WindowSizeMsg:
 		c.width = msg.Width

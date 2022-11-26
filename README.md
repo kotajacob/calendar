@@ -6,7 +6,9 @@ A TUI version of the classic `cal` program.
 ## Controls
 Using the arrow keys, hjkl, or the mouse you can navigate around the calendar.
 Pressing tab will switch your focus to the preview window so you scroll it up
-and down. Pressing enter will open the selected day's note in your editor.
+and down. Pressing enter will open the selected day's note in your editor. There
+are a few other keys for things like copying the selected date to the clipboard.
+See calendar(1) for details.
 
 ## Display
 The program expands to use as much terminal space as you provide. More vertical

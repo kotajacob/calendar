@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Copy selected date to clipboard.
+
+## [0.1.0]
+### Added
 - Display one/three months at a time depending on terminal height.
 - Display a note file for selected day depending on terminal width.
 - Select different day with hjkl, arrow keys or the mouse.

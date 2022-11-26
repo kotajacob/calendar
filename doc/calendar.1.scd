@@ -14,9 +14,16 @@ out future events, or to simply browse an interactive calendar.
 
 # CONTROLS
 
-Using the arrow keys, hjkl, or the mouse you can navigate around the calendar.
-Pressing tab will switch your focus to the preview window so you scroll it up
-and down. Pressing enter will open the selected day's note in your editor.
+[[ *Select*
+:< hjkl, arrow keys, or left mouse
+|  *Focus preview*
+:< tab
+|  *Scroll preview*
+:< jk, up/down (if focused)
+|  *Edit note*
+:< enter
+|  *Copy date*
+:< y
 
 # DISPLAY
 
