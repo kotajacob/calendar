@@ -164,7 +164,13 @@ func (m Model) resize() Model {
 		m.months = append([]month.Model{last}, m.months...)
 		m.months = append(m.months, next)
 	default:
-		m.months = []month.Model{m.months[1]}
+		m.months = []month.Model{month.New(
+			m.selected,
+			m.today,
+			m.selected,
+			true,
+			m.config,
+		)}
 	}
 	return m
 }
