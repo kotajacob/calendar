@@ -27,15 +27,15 @@ const (
 // returns.
 type editorFinishedMsg struct{ err error }
 
-// Model is the Bubble Tea model for this calendar element. The calendar is a
+// Calendar is the Bubble Tea model for this calendar element. The calendar is a
 // thin wrapper for the month elements. It creates and destroys them based on
 // the size of the window.
-type Model struct {
+type Calendar struct {
 	today       time.Time
 	selected    time.Time
 	config      *config.Config
 	style       lipgloss.Style
-	months      []month.Model
+	months      []month.Month
 	preview     preview.Model
 	height      int
 	width       int
@@ -44,15 +44,15 @@ type Model struct {
 }
 
 // New creates a new calendar model.
-func New(conf *config.Config) Model {
+func New(conf *config.Config) Calendar {
 	now := time.Now()
-	m := Model{
+	m := Calendar{
 		today:    now,
 		selected: now,
 		style: lipgloss.NewStyle().
 			PaddingLeft(conf.LeftPadding).
 			PaddingRight(conf.RightPadding),
-		months: []month.Model{
+		months: []month.Month{
 			month.New(now, now, now, true, conf),
 		},
 		config: conf,
@@ -62,85 +62,85 @@ func New(conf *config.Config) Model {
 }
 
 // Init the calendar in Bubble Tea.
-func (m Model) Init() tea.Cmd {
+func (c Calendar) Init() tea.Cmd {
 	return nil
 }
 
 // Update the calendar in the Bubble Tea update loop.
-func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "h", "left":
-			m.SetFocus(focusMonths)
+			c.SetFocus(focusMonths)
 		case "l", "right":
-			m.SetFocus(focusMonths)
+			c.SetFocus(focusMonths)
 		case "enter":
-			path := m.selected.Format(os.ExpandEnv(m.config.NotePath))
+			path := c.selected.Format(os.ExpandEnv(c.config.NotePath))
 			cmd := tea.ExecProcess(
 				exec.Command("vim", path),
 				func(err error) tea.Msg {
 					return editorFinishedMsg{err: err}
 				})
-			return m, cmd
+			return c, cmd
 		case "tab":
-			m.ToggleFocus()
+			c.ToggleFocus()
 		}
 	case tea.WindowSizeMsg:
-		m.width = msg.Width
-		m.height = msg.Height
+		c.width = msg.Width
+		c.height = msg.Height
 
-		if !m.initialized {
-			note := loadNote(m.selected, m.config.NotePath)
-			m.preview = preview.New(note, msg.Width, msg.Height, m.config)
-			m.initialized = true
+		if !c.initialized {
+			note := loadNote(c.selected, c.config.NotePath)
+			c.preview = preview.New(note, msg.Width, msg.Height, c.config)
+			c.initialized = true
 		}
 
-		m = m.resize()
+		c = c.resize()
 	case editorFinishedMsg:
 		// Reload the note when the user exits their editor.
-		m = m.Select(m.selected)
+		c = c.Select(c.selected)
 	}
-	return m.propagate(msg)
+	return c.propagate(msg)
 }
 
 // propagate an update to all children.
-func (m Model) propagate(msg tea.Msg) (Model, tea.Cmd) {
+func (c Calendar) propagate(msg tea.Msg) (Calendar, tea.Cmd) {
 	var cmds []tea.Cmd
-	for i, month := range m.months {
+	for i, month := range c.months {
 		var cmd tea.Cmd
-		m.months[i], cmd = month.Update(msg)
+		c.months[i], cmd = month.Update(msg)
 		cmds = append(cmds, cmd)
 	}
 
-	for _, month := range m.months {
+	for _, month := range c.months {
 		// If the month's selection changed we need to update our selection and
 		// the selection of all other months to avoid letting the selection get
 		// out of sync!
-		if !month.Selected().Equal(m.selected) {
-			m = m.Select(month.Selected())
+		if !month.Selected().Equal(c.selected) {
+			c = c.Select(month.Selected())
 		}
 	}
 
 	var cmd tea.Cmd
-	m.preview, cmd = m.preview.Update(msg)
+	c.preview, cmd = c.preview.Update(msg)
 	cmds = append(cmds, cmd)
 
-	return m, tea.Batch(cmds...)
+	return c, tea.Batch(cmds...)
 }
 
 // resize the number of months being displayed to fill the window size.
-func (m Model) resize() Model {
+func (c Calendar) resize() Calendar {
 	var want int
 	switch {
-	case m.height > 3*month.MonthHeight:
+	case c.height > 3*month.MonthHeight:
 		want = 3
 	default:
 		want = 1
 	}
 
-	if len(m.months) == want {
-		return m
+	if len(c.months) == want {
+		return c
 	}
 
 	// TODO: Revise this to find the "center" month once we have more than 2
@@ -148,76 +148,76 @@ func (m Model) resize() Model {
 	switch want {
 	case 3:
 		last := month.New(
-			lastMonth(m.selected),
-			m.today,
-			m.selected,
+			lastMonth(c.selected),
+			c.today,
+			c.selected,
 			true,
-			m.config,
+			c.config,
 		)
 		next := month.New(
-			nextMonth(m.selected),
-			m.today,
-			m.selected,
+			nextMonth(c.selected),
+			c.today,
+			c.selected,
 			true,
-			m.config,
+			c.config,
 		)
-		m.months = append([]month.Model{last}, m.months...)
-		m.months = append(m.months, next)
+		c.months = append([]month.Month{last}, c.months...)
+		c.months = append(c.months, next)
 	default:
-		m.months = []month.Model{month.New(
-			m.selected,
-			m.today,
-			m.selected,
+		c.months = []month.Month{month.New(
+			c.selected,
+			c.today,
+			c.selected,
 			true,
-			m.config,
+			c.config,
 		)}
 	}
-	return m
+	return c
 }
 
 // Select a different date. This updates the selection on the calendar, all of
 // it's months, and the preview window. It also sets the focus to the months.
-func (m Model) Select(t time.Time) Model {
-	m.selected = t
-	for i, month := range m.months {
-		m.months[i] = month.Select(t)
+func (c Calendar) Select(t time.Time) Calendar {
+	c.selected = t
+	for i, month := range c.months {
+		c.months[i] = month.Select(t)
 	}
-	m.preview = m.preview.SetContent(loadNote(t, m.config.NotePath))
-	m.SetFocus(focusMonths)
-	return m
+	c.preview = c.preview.SetContent(loadNote(t, c.config.NotePath))
+	c.SetFocus(focusMonths)
+	return c
 }
 
 // ToggleFocus sets the focus to the months or the preview window.
-func (m *Model) SetFocus(f focus) {
+func (c *Calendar) SetFocus(f focus) {
 	if f == focusPreview {
-		m.preview.Focus()
-		for id := range m.months {
-			m.months[id].Unfocus()
+		c.preview.Focus()
+		for id := range c.months {
+			c.months[id].Unfocus()
 		}
-		m.focus = focusPreview
+		c.focus = focusPreview
 	} else {
-		m.preview.Unfocus()
-		for id := range m.months {
-			m.months[id].Focus()
+		c.preview.Unfocus()
+		for id := range c.months {
+			c.months[id].Focus()
 		}
-		m.focus = focusMonths
+		c.focus = focusMonths
 	}
 }
 
 // ToggleFocus switches the focus between the months and the preview window.
-func (m *Model) ToggleFocus() {
-	if m.focus == focusMonths {
-		m.SetFocus(focusPreview)
+func (c *Calendar) ToggleFocus() {
+	if c.focus == focusMonths {
+		c.SetFocus(focusPreview)
 	} else {
-		m.SetFocus(focusMonths)
+		c.SetFocus(focusMonths)
 	}
 }
 
 // SetToday sets the today value to a new time.
-func (m *Model) SetToday(t time.Time) {
-	m.today = t
-	for id := range m.months {
-		m.months[id].SetToday(t)
+func (c *Calendar) SetToday(t time.Time) {
+	c.today = t
+	for id := range c.months {
+		c.months[id].SetToday(t)
 	}
 }
 
@@ -250,20 +250,20 @@ func nextMonth(t time.Time) time.Time {
 }
 
 // View renders the calendar in its current state.
-func (m Model) View() string {
-	if !m.initialized {
+func (c Calendar) View() string {
+	if !c.initialized {
 		return ""
 	}
 
 	// Build a slice of rendered months.
 	var months []string
-	for _, month := range m.months {
+	for _, month := range c.months {
 		months = append(months, month.View())
 	}
 
-	return m.style.Render(lipgloss.JoinHorizontal(
+	return c.style.Render(lipgloss.JoinHorizontal(
 		lipgloss.Center,
 		lipgloss.JoinVertical(lipgloss.Center, months...),
-		m.preview.View(),
+		c.preview.View(),
 	))
 }

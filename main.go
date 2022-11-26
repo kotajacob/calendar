@@ -21,7 +21,7 @@ type tickerMsg time.Time
 // model is the top level Bubble Tea model for the whole program.
 type model struct {
 	config   *config.Config
-	calendar calendar.Model
+	calendar calendar.Calendar
 	width    int
 	height   int
 }

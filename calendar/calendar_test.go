@@ -17,8 +17,8 @@ func TestResize(t *testing.T) {
 		height     int
 		today      time.Time
 		selected   time.Time
-		months     []month.Model
-		wantMonths []month.Model
+		months     []month.Month
+		wantMonths []month.Month
 	}
 
 	defaultConfig := config.Default()
@@ -31,7 +31,7 @@ func TestResize(t *testing.T) {
 			height:    3*month.MonthHeight + 1,
 			today:     now,
 			selected:  now,
-			months: []month.Model{
+			months: []month.Month{
 				month.New(
 					now,
 					now,
@@ -40,7 +40,7 @@ func TestResize(t *testing.T) {
 					defaultConfig,
 				),
 			},
-			wantMonths: []month.Model{
+			wantMonths: []month.Month{
 				month.New(
 					lastMonth(now),
 					now,
@@ -71,7 +71,7 @@ func TestResize(t *testing.T) {
 			height:    3 * month.MonthHeight,
 			today:     now,
 			selected:  now,
-			months: []month.Model{
+			months: []month.Month{
 				month.New(
 					now,
 					now,
@@ -80,7 +80,7 @@ func TestResize(t *testing.T) {
 					defaultConfig,
 				),
 			},
-			wantMonths: []month.Model{
+			wantMonths: []month.Month{
 				month.New(
 					now,
 					now,
@@ -97,7 +97,7 @@ func TestResize(t *testing.T) {
 			height:    1 * month.MonthHeight,
 			today:     now,
 			selected:  now,
-			months: []month.Model{
+			months: []month.Month{
 				month.New(
 					now,
 					now,
@@ -120,7 +120,7 @@ func TestResize(t *testing.T) {
 					defaultConfig,
 				),
 			},
-			wantMonths: []month.Model{
+			wantMonths: []month.Month{
 				month.New(
 					now,
 					now,
@@ -137,7 +137,7 @@ func TestResize(t *testing.T) {
 			height:    1 * month.MonthHeight,
 			today:     now,
 			selected:  nextMonth(now),
-			months: []month.Model{
+			months: []month.Month{
 				month.New(
 					now,
 					now,
@@ -160,7 +160,7 @@ func TestResize(t *testing.T) {
 					defaultConfig,
 				),
 			},
-			wantMonths: []month.Model{
+			wantMonths: []month.Month{
 				month.New(
 					nextMonth(now),
 					now,

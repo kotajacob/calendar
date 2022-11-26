@@ -24,8 +24,8 @@ var (
 	gridStyle    = lipgloss.NewStyle().Width(MonthWidth)
 )
 
-// Model is the Bubble Tea model for this month element.
-type Model struct {
+// Month is the Bubble Tea model for this month element.
+type Month struct {
 	date      time.Time
 	today     time.Time
 	selected  time.Time
@@ -40,8 +40,8 @@ func New(
 	date, today, selected time.Time,
 	showYear bool,
 	conf *config.Config,
-) Model {
-	return Model{
+) Month {
+	return Month{
 		id:       date.Format("2006-01"),
 		date:     date,
 		today:    today,
@@ -52,12 +52,12 @@ func New(
 }
 
 // Init the month in Bubble Tea.
-func (m Model) Init() tea.Cmd {
+func (m Month) Init() tea.Cmd {
 	return nil
 }
 
 // Updates the month in the Bubble Tea update loop.
-func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if !m.isFocused {
@@ -102,33 +102,33 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 }
 
 // Selected returns the current selection (from the perspective of this month).
-func (m Model) Selected() time.Time {
+func (m Month) Selected() time.Time {
 	return m.selected
 }
 
 // Select updates the selected time.
-func (m Model) Select(t time.Time) Model {
+func (m Month) Select(t time.Time) Month {
 	m.selected = t
 	return m
 }
 
 // Focus the preview.
-func (m *Model) Focus() {
+func (m *Month) Focus() {
 	m.isFocused = true
 }
 
 // Unfocus the preview.
-func (m *Model) Unfocus() {
+func (m *Month) Unfocus() {
 	m.isFocused = false
 }
 
 // SetToday sets the today value to a new time.
-func (m *Model) SetToday(t time.Time) {
+func (m *Month) SetToday(t time.Time) {
 	m.today = t
 }
 
 // View renders the month in its current state.
-func (m Model) View() string {
+func (m Month) View() string {
 	h := headingStyle.Render(m.heading())
 	g := gridStyle.Render(m.grid())
 
@@ -137,7 +137,7 @@ func (m Model) View() string {
 
 // heading prints the month and optionally year centered with the weekday list
 // below it.
-func (m Model) heading() string {
+func (m Month) heading() string {
 	var heading strings.Builder
 	heading.WriteString(m.date.Month().String())
 	if m.showYear {
@@ -157,7 +157,7 @@ func (m Model) heading() string {
 }
 
 // grid prints the out the date grid for a given month.
-func (m Model) grid() string {
+func (m Month) grid() string {
 	first := firstDay(m.date)
 	last := lastDay(m.date)
 
@@ -215,7 +215,7 @@ func sameMonth(x, y time.Time) bool {
 }
 
 // String prints out the month's data for debugging.
-func (m Model) String() string {
+func (m Month) String() string {
 	var b bytes.Buffer
 	b.WriteString(fmt.Sprintln("date:", m.date))
 	b.WriteString(fmt.Sprintln("today:", m.today))
