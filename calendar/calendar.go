@@ -172,6 +172,9 @@ func (c Calendar) resize() Calendar {
 			c.config,
 		)}
 	}
+
+	// Restore focus. It gets lots when resizing.
+	c.SetFocus(c.focus)
 	return c
 }
 
