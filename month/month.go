@@ -79,6 +79,10 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 			m.selected = date.NextSaturday(m.selected)
 		case "w":
 			m.selected = date.NextSunday(m.selected)
+		case "ctrl+d":
+			m.selected = date.NextMonth(m.selected)
+		case "ctrl+u":
+			m.selected = date.LastMonth(m.selected)
 		}
 	case tea.MouseMsg:
 		if msg.Type != tea.MouseLeft {

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "b" / "H" = back to start of week
 - "e" / "L" = end of week
 - "w"       = start of next week
+- "ctrl+d"  = jump down one month
+- "ctrl+u"  = jump up one month
 
 ## [0.1.0]
 ### Added

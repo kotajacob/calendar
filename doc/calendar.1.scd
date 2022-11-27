@@ -30,6 +30,10 @@ out future events, or to simply browse an interactive calendar.
 :< w
 |  *Goto next Saturday*
 :< e, L
+|  *Go up one month*
+:< ctrl+u
+|  *Go down one month*
+:< ctrl+d
 
 # DISPLAY
 

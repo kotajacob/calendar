@@ -5,13 +5,33 @@ package date
 import "time"
 
 // LastMonth returns a time representing the previous month from time t.
+// The day of the month will be the same, or truncated to the last day.
 func LastMonth(t time.Time) time.Time {
-	return time.Date(t.Year(), t.Month()-1, 1, 0, 0, 0, 0, t.Location())
+	day := t.Day()
+	lastDay := DaysIn(t.Month()-1, t.Year())
+	if day > lastDay {
+		day = lastDay
+	}
+	return time.Date(t.Year(), t.Month()-1, day, 0, 0, 0, 0, t.Location())
 }
 
 // NextMonth returns a time representing the next month after time t.
+// The day of the month will be the same, or truncated to the last day.
 func NextMonth(t time.Time) time.Time {
-	return time.Date(t.Year(), t.Month()+1, 1, 0, 0, 0, 0, t.Location())
+	day := t.Day()
+	lastDay := DaysIn(t.Month()+1, t.Year())
+	if day > lastDay {
+		day = lastDay
+	}
+	return time.Date(t.Year(), t.Month()+1, day, 0, 0, 0, 0, t.Location())
+}
+
+// DaysIn reports the number of days in the month of time t.
+func DaysIn(m time.Month, year int) int {
+	// The reason it works is that we generate a date one month from the target,
+	// but set the day of month to 0. Days are 1-indexed, so this has the effect
+	// of rolling back one day to the last day of the previous month.
+	return time.Date(year, m+1, 0, 0, 0, 0, 0, time.UTC).Day()
 }
 
 // SameMonth returns true if both times are in the same month and year.
