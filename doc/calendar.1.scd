@@ -24,6 +24,12 @@ out future events, or to simply browse an interactive calendar.
 :< enter
 |  *Copy date*
 :< y
+|  *Goto last Sunday*
+:< b, H
+|  *Goto next Sunday*
+:< w
+|  *Goto next Saturday*
+:< e, L
 
 # DISPLAY
 

@@ -72,6 +72,12 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 			m.selected = m.selected.AddDate(0, 0, 7)
 		case "k", "up":
 			m.selected = m.selected.AddDate(0, 0, -7)
+		case "b", "H":
+			m.selected = lastSunday(m.selected)
+		case "e", "L":
+			m.selected = nextSaturday(m.selected)
+		case "w":
+			m.selected = nextSunday(m.selected)
 		}
 	case tea.MouseMsg:
 		if msg.Type != tea.MouseLeft {
@@ -209,6 +215,54 @@ func firstDay(t time.Time) time.Time {
 // lastDay returns a time representing the last day of the month for time t.
 func lastDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, t.Location())
+}
+
+// lastSunday returns a time representing the last Sunday for time t.
+func lastSunday(t time.Time) time.Time {
+	offset := int(t.Weekday())
+	if offset == 0 {
+		// If it's already sunday, go to the previous one.
+		offset = 7
+	}
+	return time.Date(
+		t.Year(),
+		t.Month(),
+		t.Day()-offset,
+		0, 0, 0, 0,
+		t.Location(),
+	)
+}
+
+// nextSunday returns a time representing the next Sunday for time t.
+func nextSunday(t time.Time) time.Time {
+	offset := int(7 - t.Weekday())
+	if offset == 0 {
+		// If it's already sunday, go to the next one.
+		offset = 7
+	}
+	return time.Date(
+		t.Year(),
+		t.Month(),
+		t.Day()+offset,
+		0, 0, 0, 0,
+		t.Location(),
+	)
+}
+
+// nextSaturday returns a time representing the next Saturday for time t.
+func nextSaturday(t time.Time) time.Time {
+	offset := int(6 - t.Weekday())
+	if offset == 0 {
+		// If it's already saturday, go to the next one.
+		offset = 7
+	}
+	return time.Date(
+		t.Year(),
+		t.Month(),
+		t.Day()+offset,
+		0, 0, 0, 0,
+		t.Location(),
+	)
 }
 
 // SameMonth returns true if both times are in the same month and year.

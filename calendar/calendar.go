@@ -72,9 +72,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "h", "left":
-			c.SetFocus(focusMonths)
-		case "l", "right":
+		case "h", "left", "l", "right", "b", "H", "e", "L":
 			c.SetFocus(focusMonths)
 		case "enter":
 			path := c.selected.Format(os.ExpandEnv(c.config.NotePath))
