@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"git.sr.ht/~kota/calendar/config"
+	"git.sr.ht/~kota/calendar/date"
 	"git.sr.ht/~kota/calendar/month"
 	"git.sr.ht/~kota/calendar/preview"
 	"github.com/atotto/clipboard"
@@ -139,7 +140,7 @@ func (c Calendar) Select(t time.Time) Calendar {
 	// list.
 	offScreen := true
 	for i, m := range c.months {
-		if month.SameMonth(m.Date(), t) {
+		if date.SameMonth(m.Date(), t) {
 			offScreen = false
 		}
 		c.months[i] = m.Select(t)
@@ -204,16 +205,6 @@ func loadNote(t time.Time, path string) string {
 		data = []byte(err.Error())
 	}
 	return string(data)
-}
-
-// lastMonth returns a time representing the previous month from time t.
-func lastMonth(t time.Time) time.Time {
-	return time.Date(t.Year(), t.Month()-1, 1, 0, 0, 0, 0, t.Location())
-}
-
-// nextMonth returns a time representing the next month after time t.
-func nextMonth(t time.Time) time.Time {
-	return time.Date(t.Year(), t.Month()+1, 1, 0, 0, 0, 0, t.Location())
 }
 
 // View renders the calendar in its current state.

@@ -2,7 +2,10 @@
 // (c) 2022 Dakota Walsh <kota@nilsu.org>
 package calendar
 
-import "git.sr.ht/~kota/calendar/month"
+import (
+	"git.sr.ht/~kota/calendar/date"
+	"git.sr.ht/~kota/calendar/month"
+)
 
 // resize the number of months being displayed to fill the window size.
 func (c Calendar) resize() Calendar {
@@ -42,7 +45,7 @@ func (c Calendar) resizeThree() []month.Month {
 	case 0:
 		return []month.Month{
 			month.New(
-				lastMonth(c.selected),
+				date.LastMonth(c.selected),
 				c.today,
 				c.selected,
 				true,
@@ -56,7 +59,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.config,
 			),
 			month.New(
-				nextMonth(c.selected),
+				date.NextMonth(c.selected),
 				c.today,
 				c.selected,
 				true,
@@ -73,14 +76,14 @@ func (c Calendar) resizeThree() []month.Month {
 				c.config,
 			),
 			month.New(
-				nextMonth(c.selected),
+				date.NextMonth(c.selected),
 				c.today,
 				c.selected,
 				true,
 				c.config,
 			),
 			month.New(
-				nextMonth(nextMonth(c.selected)),
+				date.NextMonth(date.NextMonth(c.selected)),
 				c.today,
 				c.selected,
 				true,
@@ -90,14 +93,14 @@ func (c Calendar) resizeThree() []month.Month {
 	default: // 2
 		return []month.Month{
 			month.New(
-				lastMonth(lastMonth(c.selected)),
+				date.LastMonth(date.LastMonth(c.selected)),
 				c.today,
 				c.selected,
 				true,
 				c.config,
 			),
 			month.New(
-				lastMonth(c.selected),
+				date.LastMonth(c.selected),
 				c.today,
 				c.selected,
 				true,

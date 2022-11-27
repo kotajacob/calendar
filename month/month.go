@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"git.sr.ht/~kota/calendar/config"
+	"git.sr.ht/~kota/calendar/date"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
@@ -73,18 +74,18 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 		case "k", "up":
 			m.selected = m.selected.AddDate(0, 0, -7)
 		case "b", "H":
-			m.selected = lastSunday(m.selected)
+			m.selected = date.LastSunday(m.selected)
 		case "e", "L":
-			m.selected = nextSaturday(m.selected)
+			m.selected = date.NextSaturday(m.selected)
 		case "w":
-			m.selected = nextSunday(m.selected)
+			m.selected = date.NextSunday(m.selected)
 		}
 	case tea.MouseMsg:
 		if msg.Type != tea.MouseLeft {
 			return m, nil
 		}
 
-		last := lastDay(m.date)
+		last := date.LastDay(m.date)
 		for day := 1; day <= last.Day(); day++ {
 			if zone.Get(m.id + "-" + strconv.Itoa(day)).InBounds(msg) {
 				t, err := time.ParseInLocation(
@@ -159,7 +160,7 @@ func (m Month) heading() string {
 	heading.WriteString("Su Mo Tu We Th Fr Sa")
 
 	style := headingStyle.Copy()
-	if !SameMonth(m.date, m.selected) {
+	if !date.SameMonth(m.date, m.selected) {
 		style.Inherit(
 			lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 		)
@@ -169,8 +170,8 @@ func (m Month) heading() string {
 
 // grid prints the out the date grid for a given month.
 func (m Month) grid() string {
-	first := firstDay(m.date)
-	last := lastDay(m.date)
+	first := date.FirstDay(m.date)
+	last := date.LastDay(m.date)
 
 	var b strings.Builder
 	// Insert blank padding until first day.
@@ -181,7 +182,7 @@ func (m Month) grid() string {
 	// Render the grid of days.
 	for i := 1; i <= last.Day(); i++ {
 		day := lipgloss.NewStyle()
-		if SameMonth(m.date, m.selected) {
+		if date.SameMonth(m.date, m.selected) {
 			if i == m.selected.Day() {
 				day = day.Copy().Reverse(true)
 			}
@@ -190,7 +191,7 @@ func (m Month) grid() string {
 				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 			)
 		}
-		if SameMonth(m.date, m.today) && i == m.today.Day() {
+		if date.SameMonth(m.date, m.today) && i == m.today.Day() {
 			day = day.Copy().Foreground(lipgloss.Color(m.config.TodayColor))
 		}
 		b.WriteString(
@@ -205,72 +206,6 @@ func (m Month) grid() string {
 		}
 	}
 	return b.String()
-}
-
-// firstDay returns a time representing the first day of the month for time t.
-func firstDay(t time.Time) time.Time {
-	return time.Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, t.Location())
-}
-
-// lastDay returns a time representing the last day of the month for time t.
-func lastDay(t time.Time) time.Time {
-	return time.Date(t.Year(), t.Month()+1, 0, 0, 0, 0, 0, t.Location())
-}
-
-// lastSunday returns a time representing the last Sunday for time t.
-func lastSunday(t time.Time) time.Time {
-	offset := int(t.Weekday())
-	if offset == 0 {
-		// If it's already sunday, go to the previous one.
-		offset = 7
-	}
-	return time.Date(
-		t.Year(),
-		t.Month(),
-		t.Day()-offset,
-		0, 0, 0, 0,
-		t.Location(),
-	)
-}
-
-// nextSunday returns a time representing the next Sunday for time t.
-func nextSunday(t time.Time) time.Time {
-	offset := int(7 - t.Weekday())
-	if offset == 0 {
-		// If it's already sunday, go to the next one.
-		offset = 7
-	}
-	return time.Date(
-		t.Year(),
-		t.Month(),
-		t.Day()+offset,
-		0, 0, 0, 0,
-		t.Location(),
-	)
-}
-
-// nextSaturday returns a time representing the next Saturday for time t.
-func nextSaturday(t time.Time) time.Time {
-	offset := int(6 - t.Weekday())
-	if offset == 0 {
-		// If it's already saturday, go to the next one.
-		offset = 7
-	}
-	return time.Date(
-		t.Year(),
-		t.Month(),
-		t.Day()+offset,
-		0, 0, 0, 0,
-		t.Location(),
-	)
-}
-
-// SameMonth returns true if both times are in the same month and year.
-func SameMonth(x, y time.Time) bool {
-	if x.Year() == y.Year() && int(x.Month()) == int(y.Month()) {
-		return true
-	}
-	return false
 }
 
 // String prints out the month's data for debugging.
