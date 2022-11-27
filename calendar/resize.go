@@ -1,3 +1,5 @@
+// License: GPL-3.0-only
+// (c) 2022 Dakota Walsh <kota@nilsu.org>
 package calendar
 
 import "git.sr.ht/~kota/calendar/month"
