@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- "p"       = toggle preview visibility
 - "y"       = copy selected date to clipboard
 - "b" / "H" = back to start of week
 - "e" / "L" = end of week

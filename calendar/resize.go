@@ -25,7 +25,7 @@ func (c Calendar) resize() Calendar {
 	}
 
 	// Restore focus. It gets lots when resizing.
-	c.SetFocus(c.focus)
+	c.SetFocus(c.previewMode)
 	return c
 }
 

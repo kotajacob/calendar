@@ -18,6 +18,8 @@ out future events, or to simply browse an interactive calendar.
 :< hjkl, arrow keys, or left mouse
 |  *Focus preview*
 :< tab
+|  *Enable/disable preview*
+:< p
 |  *Scroll preview*
 :< jk, up/down (if focused)
 |  *Edit note*

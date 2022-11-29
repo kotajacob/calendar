@@ -18,11 +18,13 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type focus int
+// previewMode describes if the preview is shown, focused, or hidden.
+type previewMode int
 
 const (
-	focusMonths = iota
-	focusPreview
+	previewModeShown previewMode = iota
+	previewModeFocused
+	previewModeHidden
 )
 
 // editorFinishedMsg is a tea.Msg returned when the spawned editor process
@@ -39,9 +41,9 @@ type Calendar struct {
 	style       lipgloss.Style
 	months      []month.Month
 	preview     preview.Model
+	previewMode previewMode
 	height      int
 	width       int
-	focus       focus
 	initialized bool
 }
 
@@ -59,7 +61,7 @@ func New(conf *config.Config) Calendar {
 		},
 		config: conf,
 	}
-	m.SetFocus(focusMonths)
+	m.SetFocus(previewModeShown)
 	return m
 }
 
@@ -74,7 +76,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "h", "left", "l", "right", "b", "H", "e", "L":
-			c.SetFocus(focusMonths)
+			c.SetFocus(previewModeShown)
 		case "enter":
 			path := c.selected.Format(os.ExpandEnv(c.config.NotePath))
 			cmd := tea.ExecProcess(
@@ -85,6 +87,8 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 			return c, cmd
 		case "tab":
 			c.ToggleFocus()
+		case "p":
+			c.TogglePreview()
 		case "y":
 			clipboard.WriteAll(c.selected.Format("2006-01-02"))
 		}
@@ -151,33 +155,43 @@ func (c Calendar) Select(t time.Time) Calendar {
 	}
 
 	c.preview = c.preview.SetContent(loadNote(t, c.config.NotePath))
-	c.SetFocus(focusMonths)
+	c.SetFocus(previewModeShown)
 	return c
 }
 
-// ToggleFocus sets the focus to the months or the preview window.
-func (c *Calendar) SetFocus(f focus) {
-	if f == focusPreview {
+// SetFocus sets the focus to the months or the preview window, but will not
+// enable the preview if it was hidden.
+func (c *Calendar) SetFocus(f previewMode) {
+	if f == previewModeFocused {
 		c.preview.Focus()
 		for id := range c.months {
 			c.months[id].Unfocus()
 		}
-		c.focus = focusPreview
 	} else {
 		c.preview.Unfocus()
 		for id := range c.months {
 			c.months[id].Focus()
 		}
-		c.focus = focusMonths
 	}
+	c.previewMode = f
 }
 
 // ToggleFocus switches the focus between the months and the preview window.
 func (c *Calendar) ToggleFocus() {
-	if c.focus == focusMonths {
-		c.SetFocus(focusPreview)
+	if c.previewMode == previewModeShown {
+		c.SetFocus(previewModeFocused)
 	} else {
-		c.SetFocus(focusMonths)
+		c.SetFocus(previewModeShown)
+	}
+}
+
+// TogglePreview switches the focus between the months and the preview window.
+func (c *Calendar) TogglePreview() {
+	if c.previewMode == previewModeShown ||
+		c.previewMode == previewModeFocused {
+		c.SetFocus(previewModeHidden)
+	} else {
+		c.SetFocus(previewModeShown)
 	}
 }
 
@@ -223,11 +237,14 @@ func (c Calendar) View() string {
 		months = append(months, month.View())
 	}
 
+	var preview string
+	if c.previewMode != previewModeHidden {
+		preview = c.preview.View()
+	}
 	r := c.style.Render(lipgloss.JoinHorizontal(
 		lipgloss.Center,
 		lipgloss.JoinVertical(lipgloss.Center, months...),
-		c.preview.View(),
+		preview,
 	))
-
 	return r
 }
