@@ -85,26 +85,38 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 			m.selected = date.LastMonth(m.selected)
 		}
 	case tea.MouseMsg:
-		if msg.Type != tea.MouseLeft {
-			return m, nil
-		}
+		switch msg.Type {
+		case tea.MouseWheelUp:
+			m.selected = m.selected.AddDate(0, 0, -7)
+		case tea.MouseWheelDown:
+			m.selected = m.selected.AddDate(0, 0, 7)
+		case tea.MouseLeft:
+			last := date.LastDay(m.date)
+			for day := 1; day <= last.Day(); day++ {
+				if zone.Get(m.id + "-" + strconv.Itoa(day)).InBounds(msg) {
+					t, err := time.ParseInLocation(
+						"2006-01",
+						m.id,
+						m.date.Location(),
+					)
+					if err != nil {
+						return m, nil
+					}
 
-		last := date.LastDay(m.date)
-		for day := 1; day <= last.Day(); day++ {
-			if zone.Get(m.id + "-" + strconv.Itoa(day)).InBounds(msg) {
-				t, err := time.ParseInLocation(
-					"2006-01",
-					m.id,
-					m.date.Location(),
-				)
-				if err != nil {
-					return m, nil
+					year := t.Year()
+					month := t.Month()
+					m.selected = time.Date(
+						year,
+						month,
+						day,
+						0,
+						0,
+						0,
+						0,
+						m.date.Location(),
+					)
+					break
 				}
-				year := t.Year()
-				month := t.Month()
-
-				m.selected = time.Date(year, month, day, 0, 0, 0, 0, m.date.Location())
-				break
 			}
 		}
 	}

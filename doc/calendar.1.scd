@@ -15,7 +15,7 @@ out future events, or to simply browse an interactive calendar.
 # CONTROLS
 
 [[ *Select*
-:< hjkl, arrow keys, or left mouse
+:< hjkl, arrow keys, or mouse
 |  *Focus preview*
 :< tab
 |  *Enable/disable preview*
