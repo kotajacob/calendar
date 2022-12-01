@@ -18,8 +18,8 @@ import (
 const BorderThickness = 2
 const MaxHeight = month.MonthHeight*3 - BorderThickness/2
 
-// Model is the Bubble Tea model for this preview element.
-type Model struct {
+// Preview is the Bubble Tea model for this preview element.
+type Preview struct {
 	config    *config.Config
 	style     lipgloss.Style
 	content   string
@@ -31,8 +31,8 @@ type Model struct {
 }
 
 // New creates a new preview model.
-func New(content string, width, height int, conf *config.Config) Model {
-	return Model{
+func New(content string, width, height int, conf *config.Config) Preview {
+	return Preview{
 		style: lipgloss.NewStyle().
 			Border(lipgloss.HiddenBorder(), true).
 			PaddingLeft(conf.PreviewPadding).
@@ -43,64 +43,64 @@ func New(content string, width, height int, conf *config.Config) Model {
 }
 
 // Init the preview in Bubble Tea.
-func (m Model) Init() tea.Cmd {
+func (p Preview) Init() tea.Cmd {
 	return nil
 }
 
 // Updates the preview in the Bubble Tea update loop.
-func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+func (p Preview) Update(msg tea.Msg) (Preview, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if !m.isFocused {
-			return m, nil
+		if !p.isFocused {
+			return p, nil
 		}
 		switch {
-		case m.config.KeySelectDown.Contains(msg.String()):
-			m.LineDown(1)
-		case m.config.KeySelectUp.Contains(msg.String()):
-			m.LineUp(1)
+		case p.config.KeySelectDown.Contains(msg.String()):
+			p.LineDown(1)
+		case p.config.KeySelectUp.Contains(msg.String()):
+			p.LineUp(1)
 		}
 	case tea.WindowSizeMsg:
-		m.setWidth(msg.Width)
-		m.setHeight(msg.Height)
+		p.setWidth(msg.Width)
+		p.setHeight(msg.Height)
 	}
-	return m, nil
+	return p, nil
 }
 
 // SetWidth of the preview window.
 // Padding, Margin, MinWidth, and MaxWidth are all taken into account.
-func (m *Model) setWidth(width int) {
+func (p *Preview) setWidth(width int) {
 	width = width - month.MonthWidth
-	width = width - m.config.PreviewLeftMargin
-	width = width - 2*m.config.PreviewPadding
-	width = width - m.config.LeftPadding
-	width = width - m.config.RightPadding
+	width = width - p.config.PreviewLeftMargin
+	width = width - 2*p.config.PreviewPadding
+	width = width - p.config.LeftPadding
+	width = width - p.config.RightPadding
 	width = width - BorderThickness
 
 	// Handle min and max width.
-	if width > m.config.PreviewMaxWidth {
-		width = m.config.PreviewMaxWidth
-	} else if width < m.config.PreviewMinWidth {
+	if width > p.config.PreviewMaxWidth {
+		width = p.config.PreviewMaxWidth
+	} else if width < p.config.PreviewMinWidth {
 		width = 0
 	}
 
-	m.width = width
-	m.lines = lines(m.content, m.width)
+	p.width = width
+	p.lines = lines(p.content, p.width)
 }
 
 // setHeight of the preview window.
 // Padding and MaxHeight are both taken into account.
-func (m *Model) setHeight(height int) {
+func (p *Preview) setHeight(height int) {
 	height = height - BorderThickness
 	if height > MaxHeight {
-		m.height = MaxHeight
+		p.height = MaxHeight
 		return
 	}
-	m.height = height
+	p.height = height
 }
 
 // SetContent is used to change the content displayed in the preview window.
-func (m Model) SetContent(s string) Model {
+func (p Preview) SetContent(s string) Preview {
 	// Remove hard-line breaks so we can re-wrap to the current width later.
 	var b bytes.Buffer
 	var last rune
@@ -118,87 +118,87 @@ func (m Model) SetContent(s string) Model {
 		last = r
 	}
 
-	m.content = b.String()
-	m.yoffset = 0
-	m.lines = lines(m.content, m.width)
-	return m
+	p.content = b.String()
+	p.yoffset = 0
+	p.lines = lines(p.content, p.width)
+	return p
 }
 
 // Focus the preview.
-func (m *Model) Focus() {
-	m.style.Border(lipgloss.RoundedBorder(), true)
-	m.isFocused = true
+func (p *Preview) Focus() {
+	p.style.Border(lipgloss.RoundedBorder(), true)
+	p.isFocused = true
 }
 
 // Unfocus the preview.
-func (m *Model) Unfocus() {
-	m.style.Border(lipgloss.HiddenBorder(), true)
-	m.isFocused = false
+func (p *Preview) Unfocus() {
+	p.style.Border(lipgloss.HiddenBorder(), true)
+	p.isFocused = false
 }
 
 // AtTop returns whether or not the viewport is in the very top position.
-func (m Model) AtTop() bool {
-	return m.yoffset <= 0
+func (p Preview) AtTop() bool {
+	return p.yoffset <= 0
 }
 
 // AtBottom returns whether or not the viewport is at or past the very bottom
 // position.
-func (m Model) AtBottom() bool {
-	return m.yoffset >= m.maxYOffset()
+func (p Preview) AtBottom() bool {
+	return p.yoffset >= p.maxYOffset()
 }
 
 // maxYOffset returns the maximum possible value of the y-offset based on the
 // viewport's content and set height.
-func (m Model) maxYOffset() int {
-	return max(0, len(m.lines)-m.height)
+func (p Preview) maxYOffset() int {
+	return max(0, len(p.lines)-p.height)
 }
 
 // LineUp moves the view down by the given number of lines.
-func (m *Model) LineUp(n int) {
-	if m.AtTop() || n == 0 {
+func (p *Preview) LineUp(n int) {
+	if p.AtTop() || n == 0 {
 		return
 	}
 
 	// Make sure the number of lines by which we're going to scroll isn't
 	// greater than the number of lines we are from the top.
-	m.SetYOffset(m.yoffset - n)
+	p.SetYOffset(p.yoffset - n)
 	return
 }
 
 // LineDown moves the view down by the given number of lines.
-func (m *Model) LineDown(n int) {
-	if m.AtBottom() || n == 0 {
+func (p *Preview) LineDown(n int) {
+	if p.AtBottom() || n == 0 {
 		return
 	}
 
 	// Make sure the number of lines by which we're going to scroll isn't
 	// greater than the number of lines we actually have left before we reach
 	// the bottom.
-	m.SetYOffset(m.yoffset + n)
+	p.SetYOffset(p.yoffset + n)
 	return
 }
 
 // SetYOffset sets the Y offset.
-func (m *Model) SetYOffset(n int) {
-	m.yoffset = clamp(n, 0, m.maxYOffset())
+func (p *Preview) SetYOffset(n int) {
+	p.yoffset = clamp(n, 0, p.maxYOffset())
 }
 
 // View renders the preview in its current state.
-func (m Model) View() string {
-	if m.width < m.config.PreviewMinWidth {
+func (p Preview) View() string {
+	if p.width < p.config.PreviewMinWidth {
 		return ""
 	}
 
 	// Show empty preview window even when there's no content.
-	visible := m.visibleLines()
+	visible := p.visibleLines()
 
 	// Fill empty space with newlines
 	extraLines := ""
-	if len(visible) < m.height {
-		extraLines = strings.Repeat("\n", max(0, m.height-len(visible)))
+	if len(visible) < p.height {
+		extraLines = strings.Repeat("\n", max(0, p.height-len(visible)))
 	}
 
-	return m.style.Render(
+	return p.style.Render(
 		strings.Join(visible, "\n") + extraLines,
 	)
 }
@@ -223,11 +223,11 @@ func lines(s string, width int) []string {
 
 // visibleLines returns the lines that should currently be visible in the
 // viewport.
-func (m Model) visibleLines() (lines []string) {
-	if len(m.lines) > 0 {
-		top := max(0, m.yoffset)
-		bottom := clamp(m.yoffset+m.height, top, len(m.lines))
-		lines = m.lines[top:bottom]
+func (p Preview) visibleLines() (lines []string) {
+	if len(p.lines) > 0 {
+		top := max(0, p.yoffset)
+		bottom := clamp(p.yoffset+p.height, top, len(p.lines))
+		lines = p.lines[top:bottom]
 	}
 	return lines
 }

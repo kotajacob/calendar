@@ -40,7 +40,7 @@ type Calendar struct {
 	config      *config.Config
 	style       lipgloss.Style
 	months      []month.Month
-	preview     preview.Model
+	preview     preview.Preview
 	previewMode previewMode
 	height      int
 	width       int
