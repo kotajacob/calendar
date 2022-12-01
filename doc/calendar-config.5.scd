@@ -1,4 +1,4 @@
-calendar-config(5)
+calendar-config(5) [""["calendar-VERSION"]]
 
 # NAME
 
@@ -103,9 +103,14 @@ ones":
 https://github.com/charmbracelet/bubbletea/blob/94d6f5079e07301046e38f6c59cb286dd6856155/key.go#L245
 
 *KeyQuit*
-	Quit out of the program.
+	Quit out of the program (or just the help menu).
 
 	Default: ["ctrl+c", "q"]
+
+*KeyHelp*
+	Display the help menu.
+
+	Default: ["?"]
 
 *KeySelectLeft*
 	Select the day to the left.

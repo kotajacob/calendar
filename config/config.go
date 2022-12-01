@@ -24,6 +24,7 @@ type Config struct {
 	PreviewMinWidth      int
 	PreviewMaxWidth      int
 	KeyQuit              Control
+	KeyHelp              Control
 	KeySelectLeft        Control
 	KeySelectDown        Control
 	KeySelectUp          Control
@@ -68,6 +69,7 @@ func Default() *Config {
 		PreviewMinWidth:   40,
 		PreviewMaxWidth:   80,
 		KeyQuit:           []string{"ctrl+c", "q"},
+		KeyHelp:           []string{"?"},
 		KeySelectLeft:     []string{"left", "h"},
 		KeySelectDown:     []string{"down", "j"},
 		KeySelectUp:       []string{"up", "k"},

@@ -10,10 +10,14 @@ import (
 
 	"git.sr.ht/~kota/calendar/calendar"
 	"git.sr.ht/~kota/calendar/config"
+	"git.sr.ht/~kota/calendar/help"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
 )
+
+// Version is overwritten at build time in the Makefile.
+var Version = "development version"
 
 // tickerMsg is a tea.Msg which should be returned with the current time.
 type tickerMsg time.Time
@@ -21,7 +25,9 @@ type tickerMsg time.Time
 // model is the top level Bubble Tea model for the whole program.
 type model struct {
 	config   *config.Config
+	mode     mode
 	calendar calendar.Calendar
+	help     help.Help
 	width    int
 	height   int
 }
@@ -30,6 +36,14 @@ type model struct {
 func (m model) Init() tea.Cmd {
 	return fiveMinutes()
 }
+
+// mode describes if the calendar or the help menu should be shown.
+type mode uint8
+
+const (
+	modeCalendar mode = iota
+	modeHelp
+)
 
 // fiveMinutes starts a timer which will return a tickerMsg after five minutes.
 // This is used to update the "today" value on the calendar.
@@ -57,8 +71,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+		case m.config.KeyHelp.Contains(msg.String()):
+			m.mode = modeHelp
 		case m.config.KeyQuit.Contains(msg.String()):
-			return m, tea.Quit
+			if m.mode == modeHelp {
+				m.mode = modeCalendar
+			} else {
+				return m, tea.Quit
+			}
 
 		}
 	case tea.WindowSizeMsg:
@@ -75,13 +95,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // propagate an update to all children.
 func (m model) propagate(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var c tea.Cmd
-	m.calendar, c = m.calendar.Update(msg)
+	if m.mode == modeHelp {
+		m.help, c = m.help.Update(msg)
+	} else {
+		m.calendar, c = m.calendar.Update(msg)
+	}
 	return m, c
 }
 
 // View renders the model in its current state.
 func (m model) View() string {
-	// Render a calendar for the current month.
+	if m.mode == modeHelp {
+		// Display the help menu.
+		return lipgloss.Place(
+			m.width,
+			m.height,
+			lipgloss.Center,
+			lipgloss.Center,
+			m.help.View(),
+		)
+	}
+
+	// Display the calendar.
 	return zone.Scan(lipgloss.Place(
 		m.width,
 		m.height,
@@ -112,6 +147,7 @@ func main() {
 	p := tea.NewProgram(
 		model{
 			calendar: calendar.New(conf),
+			help:     help.New(Version),
 			config:   conf,
 		},
 		tea.WithAltScreen(),

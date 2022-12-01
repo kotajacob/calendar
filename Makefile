@@ -3,13 +3,14 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 GO ?= go
 GOFLAGS ?=
+VERSION = v0.1.0
 
 all: calendar
 
 calendar:
-	$(GO) build $(GOFLAGS) -o build/calendar
-	scdoc < doc/calendar.1.scd > build/calendar.1
-	scdoc < doc/calendar-config.5.scd > build/calendar-config.5
+	$(GO) build -ldflags "-X main.Version=$(VERSION)" $(GOFLAGS) -o build/calendar
+	scdoc < doc/calendar.1.scd | sed "s/VERSION/$(VERSION)/g" > build/calendar.1
+	scdoc < doc/calendar-config.5.scd | sed "s/VERSION/$(VERSION)/g" > build/calendar-config.5
 
 clean:
 	rm -rf build

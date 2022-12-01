@@ -1,4 +1,4 @@
-calendar(1)
+calendar(1) [""["calendar-VERSION"]]
 
 # NAME
 
