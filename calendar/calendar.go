@@ -19,7 +19,7 @@ import (
 )
 
 // previewMode describes if the preview is shown, focused, or hidden.
-type previewMode int
+type previewMode uint8
 
 const (
 	previewModeShown previewMode = iota
