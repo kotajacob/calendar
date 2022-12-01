@@ -170,3 +170,12 @@ https://github.com/charmbracelet/bubbletea/blob/94d6f5079e07301046e38f6c59cb286d
 	the selected day, the last day is used instead.
 
 	Default: ["ctrl+d"]
+
+# SEE ALSO
+
+*calendar-config*(5)
+
+# AUTHORS
+
+Maintained by Dakota Walsh <kota at nilsu.org>. Up-to-date sources can be found
+at https://git.sr.ht/~kota/calendar/

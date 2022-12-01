@@ -52,6 +52,10 @@ widget(s) with the selected day's note. You can configure a path to store these
 notes and press enter to open them in your favorite editor. See
 *calendar-config*(5) for configuration details.
 
+# SEE ALSO
+
+*calendar-config*(5)
+
 # AUTHORS
 
 Maintained by Dakota Walsh <kota at nilsu.org>. Up-to-date sources can be found
