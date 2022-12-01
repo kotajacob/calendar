@@ -14,6 +14,9 @@ out future events, or to simply browse an interactive calendar.
 
 # CONTROLS
 
+The default controls are below. See *calendar-config*(5) for configuration
+details.
+
 [[ *Select*
 :< hjkl, arrow keys, or mouse
 |  *Focus preview*

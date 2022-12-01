@@ -13,16 +13,44 @@ import (
 
 // Config represents the toml configuration file.
 type Config struct {
-	TodayColor        string
-	InactiveColor     string
-	NotePath          string
-	Editor            string
-	LeftPadding       int
-	RightPadding      int
-	PreviewLeftMargin int
-	PreviewPadding    int
-	PreviewMinWidth   int
-	PreviewMaxWidth   int
+	TodayColor           string
+	InactiveColor        string
+	NotePath             string
+	Editor               string
+	LeftPadding          int
+	RightPadding         int
+	PreviewLeftMargin    int
+	PreviewPadding       int
+	PreviewMinWidth      int
+	PreviewMaxWidth      int
+	KeySelectLeft        Control
+	KeySelectDown        Control
+	KeySelectUp          Control
+	KeySelectRight       Control
+	KeyFocusPreview      Control
+	KeyTogglePreview     Control
+	KeyScrollPreviewDown Control
+	KeyScrollPreviewUp   Control
+	KeyEditNote          Control
+	KeyYankDate          Control
+	KeyLastSunday        Control
+	KeyNextSunday        Control
+	KeyNextSaturday      Control
+	KeyMonthUp           Control
+	KeyMonthDown         Control
+}
+
+// Control is a slice of strings representing the keys bound to a given action.
+type Control []string
+
+// Contains reports if a key is bound for this control action.
+func (c Control) Contains(key string) bool {
+	for _, k := range c {
+		if key == k {
+			return true
+		}
+	}
+	return false
 }
 
 // Default returns the default configuration.
@@ -38,6 +66,19 @@ func Default() *Config {
 		PreviewPadding:    1,
 		PreviewMinWidth:   40,
 		PreviewMaxWidth:   80,
+		KeySelectLeft:     []string{"left", "h"},
+		KeySelectDown:     []string{"down", "j"},
+		KeySelectUp:       []string{"up", "k"},
+		KeySelectRight:    []string{"right", "l"},
+		KeyFocusPreview:   []string{"tab"},
+		KeyTogglePreview:  []string{"p"},
+		KeyEditNote:       []string{"enter"},
+		KeyYankDate:       []string{"y"},
+		KeyLastSunday:     []string{"b", "H"},
+		KeyNextSunday:     []string{"w"},
+		KeyNextSaturday:   []string{"e", "L"},
+		KeyMonthUp:        []string{"ctrl+u"},
+		KeyMonthDown:      []string{"ctrl+d"},
 	}
 }
 

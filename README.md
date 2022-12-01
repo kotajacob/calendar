@@ -30,8 +30,8 @@ sudo make install
 ```
 
 ## Configuration
-I've written this tool to be fairly configurable. Padding, colors, path to your
-notes and of course your editor can all be configured in
+I've written this tool to be fairly configurable. Padding, colors, controls,
+path to your notes and of course your editor can all be configured in
 `XDG_CONFIG_HOME/calendar/config.toml`. Normally, on unix systems that would be
 `$HOME/.config/config.toml`. This repository contains an example config.toml
 showing every option with detailed explanatory comments. Additionally, every

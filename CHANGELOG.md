@@ -6,13 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- "p"       = toggle preview visibility
-- "y"       = copy selected date to clipboard
-- "b" / "H" = back to start of week
-- "e" / "L" = end of week
-- "w"       = start of next week
-- "ctrl+d"  = jump down one month
-- "ctrl+u"  = jump up one month
+- Ability to configure controls.
+- Toggle preview visibility: "p".
+- Copy selected date to clipboard: "y".
+- Back to start of week: "b" / "H".
+- End of week: "e" / "L".
+- Start of next week: "w".
+- Jump down one month: "ctrl+d".
+- Jump up one month: "ctrl+u".
 
 ## [0.1.0]
 ### Added

@@ -31,10 +31,28 @@ NotePath = "$HOME/.local/share/calendar/2006-01-02.md"
 # Editor = "nvim"
 
 # Padding, LeftMargin, MinWidth, and MaxWidth for the preview window.
-# 
-# Padding and margin are included within min and max width. 
+#
+# Padding and margin are included within min and max width.
 # Unit is number of spaces.
 PreviewPadding = 1
 PreviewLeftMargin = 3
 PreviewMinWidth = 40
 PreviewMaxWidth = 80
+
+# You can change the hotkeys used to navigate the calendar. The key names are
+# mostly as you would expect, but you may refer to this list for "the strange
+# ones":
+# https://github.com/charmbracelet/bubbletea/blob/94d6f5079e07301046e38f6c59cb286dd6856155/key.go#L245
+KeySelectLeft=["left", "h"]
+KeySelectDown=["down", "j"]
+KeySelectUp=["up", "k"]
+KeySelectRight=["right", "l"]
+KeyFocusPreview=["tab"]
+KeyTogglePreview=["p"]
+KeyEditNote=["enter"]
+KeyYankDate=["y"]
+KeyLastSunday=["b", "H"]
+KeyNextSunday=["w"]
+KeyNextSaturday=["e", "L"]
+KeyMonthUp=["ctrl+u"]
+KeyMonthDown=["ctrl+d"]

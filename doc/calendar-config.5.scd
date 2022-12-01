@@ -94,3 +94,79 @@ please.
 	the width of the month widgets (which is always 20).
 
 	Default: 80
+
+# CONTROLS
+
+You can change the hotkeys used to navigate the calendar. The key names are
+mostly as you would expect, but you may refer to this list for "the strange
+ones":
+https://github.com/charmbracelet/bubbletea/blob/94d6f5079e07301046e38f6c59cb286dd6856155/key.go#L245
+
+*KeySelectLeft*
+	Select the day to the left.
+
+	Default: ["left", "h"]
+
+*KeySelectDown*
+	Select the day below.
+
+	Default: ["down", "j"]
+
+*KeySelectUp*
+	Select the day above.
+
+	Default: ["up", "k"]
+
+*KeySelectRight*
+	Select the day to the right.
+
+	Default: ["right", "l"]
+
+*KeyFocusPreview*
+	Toggle focus of the preview. When the preview is focused, KeySelectUp and
+	KeySelectDown will scroll the preview instead of changing the selection.
+
+	Default: ["tab"]
+
+*KeyTogglePreview*
+	Toggle visibility of the preview panel. When hidden, the calendar will
+	simply be centered in the screen.
+
+	Default: ["p"]
+
+*KeyEditNote*
+	Open the note for the selected day in your editor.
+
+	Default: ["enter"]
+
+*KeyYankDate*
+	Copy the selected day as yyyy-mm-dd into your clipboard.
+
+	Default: ["y"]
+
+*KeyLastSunday*
+	Select the last Sunday.
+
+	Default: ["b", "H"]
+
+*KeyNextSunday*
+	Select the next Sunday.
+
+	Default: ["w"]
+
+*KeyNextSaturday*
+	Select the next Saturday.
+
+	Default: ["e", "L"]
+
+*KeyMonthUp*
+	Select the same day in the previous month. If the month has fewer days than
+	the selected day, the last day is used instead.
+
+	Default: ["ctrl+u"]
+
+*KeyMonthDown*
+	Select the same day in the next month. If the month has fewer days than
+	the selected day, the last day is used instead.
+
+	Default: ["ctrl+d"]

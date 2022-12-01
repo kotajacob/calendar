@@ -64,24 +64,24 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 		if !m.isFocused {
 			return m, nil
 		}
-		switch msg.String() {
-		case "h", "left":
+		switch {
+		case m.config.KeySelectLeft.Contains(msg.String()):
 			m.selected = m.selected.AddDate(0, 0, -1)
-		case "l", "right":
+		case m.config.KeySelectRight.Contains(msg.String()):
 			m.selected = m.selected.AddDate(0, 0, 1)
-		case "j", "down":
+		case m.config.KeySelectDown.Contains(msg.String()):
 			m.selected = m.selected.AddDate(0, 0, 7)
-		case "k", "up":
+		case m.config.KeySelectUp.Contains(msg.String()):
 			m.selected = m.selected.AddDate(0, 0, -7)
-		case "b", "H":
+		case m.config.KeyLastSunday.Contains(msg.String()):
 			m.selected = date.LastSunday(m.selected)
-		case "e", "L":
+		case m.config.KeyNextSaturday.Contains(msg.String()):
 			m.selected = date.NextSaturday(m.selected)
-		case "w":
+		case m.config.KeyNextSunday.Contains(msg.String()):
 			m.selected = date.NextSunday(m.selected)
-		case "ctrl+d":
+		case m.config.KeyMonthDown.Contains(msg.String()):
 			m.selected = date.NextMonth(m.selected)
-		case "ctrl+u":
+		case m.config.KeyMonthUp.Contains(msg.String()):
 			m.selected = date.LastMonth(m.selected)
 		}
 	case tea.MouseMsg:

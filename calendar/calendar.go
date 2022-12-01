@@ -74,10 +74,14 @@ func (c Calendar) Init() tea.Cmd {
 func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "h", "left", "l", "right", "b", "H", "e", "L":
+		switch {
+		case c.config.KeySelectLeft.Contains(msg.String()) ||
+			c.config.KeySelectRight.Contains(msg.String()) ||
+			c.config.KeyLastSunday.Contains(msg.String()) ||
+			c.config.KeyNextSunday.Contains(msg.String()) ||
+			c.config.KeyNextSaturday.Contains(msg.String()):
 			c.SetFocus(previewModeShown)
-		case "enter":
+		case c.config.KeyEditNote.Contains(msg.String()):
 			path := c.selected.Format(os.ExpandEnv(c.config.NotePath))
 			cmd := tea.ExecProcess(
 				exec.Command("vim", path),
@@ -85,11 +89,11 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 					return editorFinishedMsg{err: err}
 				})
 			return c, cmd
-		case "tab":
+		case c.config.KeyFocusPreview.Contains(msg.String()):
 			c.ToggleFocus()
-		case "p":
+		case c.config.KeyTogglePreview.Contains(msg.String()):
 			c.TogglePreview()
-		case "y":
+		case c.config.KeyYankDate.Contains(msg.String()):
 			clipboard.WriteAll(c.selected.Format("2006-01-02"))
 		}
 	case tea.WindowSizeMsg:
