@@ -102,6 +102,11 @@ mostly as you would expect, but you may refer to this list for "the strange
 ones":
 https://github.com/charmbracelet/bubbletea/blob/94d6f5079e07301046e38f6c59cb286dd6856155/key.go#L245
 
+*KeyQuit*
+	Quit out of the program.
+
+	Default: ["ctrl+c", "q"]
+
 *KeySelectLeft*
 	Select the day to the left.
 
