@@ -54,10 +54,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		if !m.isFocused {
 			return m, nil
 		}
-		switch msg.String() {
-		case "j", "down":
+		switch {
+		case m.config.KeySelectDown.Contains(msg.String()):
 			m.LineDown(1)
-		case "k", "up":
+		case m.config.KeySelectUp.Contains(msg.String()):
 			m.LineUp(1)
 		}
 	case tea.WindowSizeMsg:
