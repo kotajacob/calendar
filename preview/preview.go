@@ -55,10 +55,21 @@ func (p Preview) Update(msg tea.Msg) (Preview, tea.Cmd) {
 			return p, nil
 		}
 		switch {
-		case p.config.KeySelectDown.Contains(msg.String()):
-			p.LineDown(1)
 		case p.config.KeySelectUp.Contains(msg.String()):
+			p.LineDown(1)
+		case p.config.KeySelectDown.Contains(msg.String()):
 			p.LineUp(1)
+		}
+	case tea.MouseMsg:
+		switch msg.Type {
+		case tea.MouseWheelUp:
+			if p.isFocused {
+				p.LineUp(1)
+			}
+		case tea.MouseWheelDown:
+			if p.isFocused {
+				p.LineDown(1)
+			}
 		}
 	case tea.WindowSizeMsg:
 		p.setWidth(msg.Width)

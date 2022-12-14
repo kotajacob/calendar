@@ -87,9 +87,13 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 	case tea.MouseMsg:
 		switch msg.Type {
 		case tea.MouseWheelUp:
-			m.selected = m.selected.AddDate(0, 0, -7)
+			if m.isFocused {
+				m.selected = m.selected.AddDate(0, 0, -7)
+			}
 		case tea.MouseWheelDown:
-			m.selected = m.selected.AddDate(0, 0, 7)
+			if m.isFocused {
+				m.selected = m.selected.AddDate(0, 0, 7)
+			}
 		case tea.MouseLeft:
 			last := date.LastDay(m.date)
 			for day := 1; day <= last.Day(); day++ {
