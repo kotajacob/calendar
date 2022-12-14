@@ -102,7 +102,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 
 		if !c.initialized {
 			note := loadNote(c.selected, c.config.NotePath)
-			c.preview = preview.New(note, msg.Width, msg.Height, c.config)
+			c.preview = preview.New(note, c.config)
 			c.initialized = true
 		}
 

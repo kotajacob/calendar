@@ -31,7 +31,7 @@ type Preview struct {
 }
 
 // New creates a new preview model.
-func New(content string, width, height int, conf *config.Config) Preview {
+func New(content string, conf *config.Config) Preview {
 	return Preview{
 		style: lipgloss.NewStyle().
 			Border(lipgloss.HiddenBorder(), true).
