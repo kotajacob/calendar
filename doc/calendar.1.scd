@@ -6,11 +6,16 @@ calendar - kota's little TUI calendar program
 
 # SYNOPSIS
 
-_calendar_
+*calendar* [[[_day_] _month_] _year_]
+
+*calendar* [_timestamp_|_monthname_]
 
 A TUI version of the classic *cal*(1) program with the ability to create, edit,
 and view note files for each day. It can be used to keep a daily journal, plan
-out future events, or to simply browse an interactive calendar.
+out future events, or to simply browse an interactive calendar. If no date is
+given, the current time is selected.
+
+If giving a timestamp it should be in the form YYYY-MM-DD or DD MM YYYY.
 
 # CONTROLS
 

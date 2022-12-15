@@ -48,16 +48,16 @@ type Calendar struct {
 }
 
 // New creates a new calendar model.
-func New(conf *config.Config) Calendar {
+func New(selected time.Time, conf *config.Config) Calendar {
 	now := time.Now()
 	m := Calendar{
 		today:    now,
-		selected: now,
+		selected: selected,
 		style: lipgloss.NewStyle().
 			PaddingLeft(conf.LeftPadding).
 			PaddingRight(conf.RightPadding),
 		months: []month.Month{
-			month.New(now, now, now, true, conf),
+			month.New(selected, now, selected, true, conf),
 		},
 		config: conf,
 	}

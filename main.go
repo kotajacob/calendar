@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"git.sr.ht/~kota/calendar/calendar"
@@ -126,6 +127,81 @@ func (m model) View() string {
 	))
 }
 
+// parseArgs reads the program's arguments to parse a starting selected time.
+func parseArgs(args []string, now time.Time) time.Time {
+	switch len(args) {
+	case 1:
+		// Early exit if there were no arguments.
+		return now
+	case 2:
+		// Argument is either "day", "timestamp", or "monthname".
+		timestamp, err := time.Parse("2006-01-02", args[1])
+		if err == nil {
+			return timestamp
+		}
+		monthnameTime, err := time.Parse("January", args[1])
+		if err == nil {
+			return time.Date(
+				now.Year(),
+				monthnameTime.Month(),
+				now.Day(),
+				0, 0, 0, 0,
+				now.Location(),
+			)
+		}
+		day, err := strconv.Atoi(args[1])
+		if err == nil {
+			return time.Date(
+				now.Year(),
+				now.Month(),
+				day,
+				0, 0, 0, 0,
+				now.Location(),
+			)
+		}
+		return now
+	case 3:
+		day, err := strconv.Atoi(args[1])
+		if err != nil {
+			return now
+		}
+		month, err := strconv.Atoi(args[2])
+		if err != nil {
+			return now
+		}
+		return time.Date(
+			now.Year(),
+			time.Month(month),
+			day,
+			0, 0, 0, 0,
+			now.Location(),
+		)
+	case 4:
+		day, err := strconv.Atoi(args[1])
+		if err != nil {
+			return now
+		}
+		month, err := strconv.Atoi(args[2])
+		if err != nil {
+			return now
+		}
+		year, err := strconv.Atoi(args[3])
+		if err != nil {
+			return now
+		}
+		return time.Date(
+			year,
+			time.Month(month),
+			day,
+			0, 0, 0, 0,
+			now.Location(),
+		)
+	}
+
+	// Return now as a fallback.
+	return now
+}
+
 func main() {
 	log.SetPrefix("")
 	log.SetFlags(0)
@@ -143,10 +219,11 @@ func main() {
 		log.Fatalf("failed to load config: %v\n", err)
 	}
 
+	selected := parseArgs(os.Args, time.Now())
 	zone.NewGlobal()
 	p := tea.NewProgram(
 		model{
-			calendar: calendar.New(conf),
+			calendar: calendar.New(selected, conf),
 			help:     help.New(Version),
 			config:   conf,
 		},
