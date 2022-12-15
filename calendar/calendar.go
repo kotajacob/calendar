@@ -166,6 +166,10 @@ func (c Calendar) Select(t time.Time) Calendar {
 // SetFocus sets the focus to the months or the preview window, but will not
 // enable the preview if it was hidden.
 func (c *Calendar) SetFocus(f previewMode) {
+	if c.previewMode == previewModeHidden {
+		return
+	}
+
 	if f == previewModeFocused {
 		c.preview.Focus()
 		for id := range c.months {
@@ -191,11 +195,15 @@ func (c *Calendar) ToggleFocus() {
 
 // TogglePreview switches the focus between the months and the preview window.
 func (c *Calendar) TogglePreview() {
+	c.preview.Unfocus()
+	for id := range c.months {
+		c.months[id].Focus()
+	}
 	if c.previewMode == previewModeShown ||
 		c.previewMode == previewModeFocused {
-		c.SetFocus(previewModeHidden)
+		c.previewMode = previewModeHidden
 	} else {
-		c.SetFocus(previewModeShown)
+		c.previewMode = previewModeShown
 	}
 }
 
