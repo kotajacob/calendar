@@ -17,17 +17,14 @@ empty lines.
 
 # NOTE OPTIONS
 
-*NotePath*
-	NotePath should describe where the note would be located for this predefined
-	time:
-	January 2, 15:04:05, 2006, in time zone seven hours west of GMT
+*NoteDir*
+	NoteDir should be set to the directory where you'd like to store
+	your notes.
 
-	Environment variable, such as $HOME may be used in the path and will be
-	expanded appropriately. If the file is missing it is simply treated as an
-	empty file. All other errors will return the error string itself (which is
-	meant to be displayed to the user).
+	Environment variables, such as $HOME, may be used in the path and will be
+	expanded appropriately.
 
-	Default: "$HOME/.local/share/calendar/2006-01-02.md"
+	Default: "$HOME/.local/share/calendar"
 
 *Editor*
 	Used to specify an editor to use when opening notes. If unspecified, we will

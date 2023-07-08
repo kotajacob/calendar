@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"git.sr.ht/~kota/calendar/config"
@@ -82,7 +83,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 			c.config.KeyNextSaturday.Contains(msg.String()):
 			c.SetFocus(previewModeShown)
 		case c.config.KeyEditNote.Contains(msg.String()):
-			path := c.selected.Format(os.ExpandEnv(c.config.NotePath))
+			path := filepath.Join(os.ExpandEnv(c.config.NoteDir), c.selected.Format("2006-01-02")) + ".md"
 			cmd := tea.ExecProcess(
 				exec.Command("vim", path),
 				func(err error) tea.Msg {
@@ -101,7 +102,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 		c.height = msg.Height
 
 		if !c.initialized {
-			note := loadNote(c.selected, c.config.NotePath)
+			note := loadNote(c.selected, c.config.NoteDir)
 			c.preview = preview.New(note, c.config)
 			c.initialized = true
 		}
@@ -158,7 +159,7 @@ func (c Calendar) Select(t time.Time) Calendar {
 		c = c.resize()
 	}
 
-	c.preview = c.preview.SetContent(loadNote(t, c.config.NotePath))
+	c.preview = c.preview.SetContent(loadNote(t, c.config.NoteDir))
 	c.SetFocus(previewModeShown)
 	return c
 }
@@ -224,9 +225,9 @@ func (c *Calendar) SetToday(t time.Time) {
 // expanded appropriately. If the file is missing it is simply treated as an
 // empty file. All other errors will return the error string itself (which is
 // meant to be displayed to the user).
-func loadNote(t time.Time, path string) string {
-	formattedPath := t.Format(os.ExpandEnv(path))
-	data, err := os.ReadFile(formattedPath)
+func loadNote(t time.Time, dir string) string {
+	path := filepath.Join(os.ExpandEnv(dir), t.Format("2006-01-02")) + ".md"
+	data, err := os.ReadFile(path)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		data = []byte(err.Error())
 	}

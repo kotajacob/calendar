@@ -15,7 +15,7 @@ import (
 type Config struct {
 	TodayColor           string
 	InactiveColor        string
-	NotePath             string
+	NoteDir              string
 	Editor               string
 	LeftPadding          int
 	RightPadding         int
@@ -62,7 +62,7 @@ func Default() *Config {
 		InactiveColor:     "8",
 		LeftPadding:       2,
 		RightPadding:      1,
-		NotePath:          "$HOME/.local/share/calendar/2006-01-02.md",
+		NoteDir:           "$HOME/.local/share/calendar",
 		Editor:            "vi",
 		PreviewLeftMargin: 3,
 		PreviewPadding:    1,

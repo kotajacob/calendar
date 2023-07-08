@@ -16,15 +16,13 @@ InactiveColor = "8"
 LeftPadding = 2
 RightPadding = 1
 
-# NotePath should describe where the note would be located for this predefined
-# time:
-# January 2, 15:04:05, 2006, in time zone seven hours west of GMT
+# NoteDir should describe where to store notes.
 #
-# Environment variable, such as $HOME may be used in the path and will be
+# Environment variables, such as $HOME may be used in the path and will be
 # expanded appropriately. If the file is missing it is simply treated as an
 # empty file. All other errors will return the error string itself (which is
 # meant to be displayed to the user).
-NotePath = "$HOME/.local/share/calendar/2006-01-02.md"
+NoteDir = "$HOME/.local/share/calendar"
 
 # You may specify an editor to use when opening notes. If unspecified, we will
 # respect the environment variables VISUAL or EDITOR or fallback to using vi.
