@@ -15,8 +15,10 @@ import (
 	"github.com/muesli/reflow/wrap"
 )
 
-const BorderThickness = 2
-const MaxHeight = month.MonthHeight*3 - BorderThickness/2
+const (
+	BorderThickness = 2
+	MaxHeight       = month.MonthHeight*3 - BorderThickness/2
+)
 
 // Preview is the Bubble Tea model for this preview element.
 type Preview struct {
@@ -56,9 +58,9 @@ func (p Preview) Update(msg tea.Msg) (Preview, tea.Cmd) {
 		}
 		switch {
 		case p.config.KeySelectUp.Contains(msg.String()):
-			p.LineDown(1)
-		case p.config.KeySelectDown.Contains(msg.String()):
 			p.LineUp(1)
+		case p.config.KeySelectDown.Contains(msg.String()):
+			p.LineDown(1)
 		}
 	case tea.MouseMsg:
 		switch msg.Type {
