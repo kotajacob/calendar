@@ -3,28 +3,34 @@
 package calendar
 
 import (
+	"time"
+
 	"git.sr.ht/~kota/calendar/date"
 	"git.sr.ht/~kota/calendar/month"
 )
 
 // resize the number of months being displayed to fill the window size.
 func (c Calendar) resize() Calendar {
-	var want int
-	switch {
-	case c.height > 3*month.MonthHeight:
+	want := 1
+	if c.height > 3*month.MonthHeight {
 		want = 3
-	default:
-		want = 1
+		if c.previewMode == previewModeHidden {
+			if c.width > 4*month.MonthWidth+c.config.LeftPadding*3 {
+				want = 12
+			}
+		}
 	}
 
 	switch want {
 	case 3:
 		c.months = c.resizeThree()
+	case 12:
+		c.months = c.resizeTwelve()
 	default:
 		c.months = c.resizeOne()
 	}
 
-	// Restore focus. It gets lots when resizing.
+	// Restore focus. It gets lost when resizing.
 	c.SetFocus(c.previewMode)
 	return c
 }
@@ -115,6 +121,31 @@ func (c Calendar) resizeThree() []month.Month {
 			),
 		}
 	}
+}
+
+func (c Calendar) resizeTwelve() []month.Month {
+	var months []month.Month
+	for i := 1; i <= 12; i++ {
+		m := date.Month(time.Month(i), c.selected.Year())
+		if date.SameMonth(m, c.selected) {
+			months = append(months, month.New(
+				m,
+				c.today,
+				c.selected,
+				false,
+				c.config,
+			))
+		} else {
+			months = append(months, month.New(
+				m,
+				c.today,
+				c.selected,
+				false,
+				c.config,
+			))
+		}
+	}
+	return months
 }
 
 // mod is a fast and simple integer modulo implementation.

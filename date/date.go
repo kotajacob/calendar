@@ -4,6 +4,12 @@ package date
 
 import "time"
 
+// Month returns a time for a given month and year. The time value represents
+// the first day of that month.
+func Month(m time.Month, year int) time.Time {
+	return time.Date(year, m, 1, 0, 0, 0, 0, time.UTC)
+}
+
 // LastMonth returns a time representing the previous month from time t.
 // The day of the month will be the same, or truncated to the last day.
 func LastMonth(t time.Time) time.Time {

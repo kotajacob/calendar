@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"git.sr.ht/~kota/calendar/config"
@@ -81,7 +82,9 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 			c.config.KeyLastSunday.Contains(msg.String()) ||
 			c.config.KeyNextSunday.Contains(msg.String()) ||
 			c.config.KeyNextSaturday.Contains(msg.String()):
-			c.SetFocus(previewModeShown)
+			if c.previewMode != previewModeHidden {
+				c.SetFocus(previewModeShown)
+			}
 		case c.config.KeyEditNote.Contains(msg.String()):
 			path := filepath.Join(os.ExpandEnv(c.config.NoteDir), c.selected.Format("2006-01-02")) + ".md"
 			cmd := tea.ExecProcess(
@@ -94,6 +97,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 			c.ToggleFocus()
 		case c.config.KeyTogglePreview.Contains(msg.String()):
 			c.TogglePreview()
+			c = c.resize()
 		case c.config.KeyYankDate.Contains(msg.String()):
 			clipboard.WriteAll(c.selected.Format("2006-01-02"))
 		}
@@ -160,17 +164,14 @@ func (c Calendar) Select(t time.Time) Calendar {
 	}
 
 	c.preview = c.preview.SetContent(loadNote(t, c.config.NoteDir))
-	c.SetFocus(previewModeShown)
+	if c.previewMode != previewModeHidden {
+		c.SetFocus(previewModeShown)
+	}
 	return c
 }
 
-// SetFocus sets the focus to the months or the preview window, but will not
-// enable the preview if it was hidden.
+// SetFocus sets the focus to the months or the preview window.
 func (c *Calendar) SetFocus(f previewMode) {
-	if c.previewMode == previewModeHidden {
-		return
-	}
-
 	if f == previewModeFocused {
 		c.preview.Focus()
 		for id := range c.months {
@@ -234,30 +235,60 @@ func loadNote(t time.Time, dir string) string {
 	return string(data)
 }
 
+// renderMonths displays a grid of months.
+func (c Calendar) renderMonths() string {
+	var rows []string
+	switch len(c.months) {
+	case 12:
+		rows = append(rows, c.selected.Format("2006"))
+		for i := 0; i < 3; i++ {
+			var column []string
+			column = append(column, c.months[0+i*4].View()+strings.Repeat(" ",
+				c.config.LeftPadding))
+			column = append(column, c.months[1+i*4].View()+strings.Repeat(" ",
+				c.config.LeftPadding))
+			column = append(column, c.months[2+i*4].View()+strings.Repeat(" ",
+				c.config.LeftPadding))
+			column = append(column, c.months[3+i*4].View())
+
+			rows = append(rows, lipgloss.JoinHorizontal(
+				lipgloss.Center,
+				column...,
+			))
+		}
+	case 3:
+		// The slice begins with an empty string to add a blank line of padding
+		// at the top of the window. This is to make it line up with the
+		// preview window, which contains a blank line or border at the top
+		// (depending on focus).
+		rows = append(rows, "")
+		for _, month := range c.months {
+			rows = append(rows, month.View())
+		}
+	case 1:
+		rows = append(rows, c.months[0].View())
+	}
+
+	return lipgloss.JoinVertical(lipgloss.Center, rows...)
+}
+
+// renderPreview displays the preview window or returns a blank string.
+func (c Calendar) renderPreview() string {
+	if c.previewMode != previewModeHidden {
+		return c.preview.View()
+	}
+	return ""
+}
+
 // View renders the calendar in its current state.
 func (c Calendar) View() string {
 	if !c.initialized {
 		return ""
 	}
 
-	// Build a slice of rendered months.
-	// The slice begins with an empty string to add a blank line of padding at
-	// the top of the window. This is to make it line up with the preview
-	// window, which contains a blank line or a a border at the top (depending
-	// on focus).
-	months := []string{""}
-	for _, month := range c.months {
-		months = append(months, month.View())
-	}
-
-	var preview string
-	if c.previewMode != previewModeHidden {
-		preview = c.preview.View()
-	}
-	r := c.style.Render(lipgloss.JoinHorizontal(
+	return c.style.Render(lipgloss.JoinHorizontal(
 		lipgloss.Center,
-		lipgloss.JoinVertical(lipgloss.Center, months...),
-		preview,
+		c.renderMonths(),
+		c.renderPreview(),
 	))
-	return r
 }

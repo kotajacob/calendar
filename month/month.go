@@ -16,8 +16,10 @@ import (
 	zone "github.com/lrstanley/bubblezone"
 )
 
-const MonthHeight = 8
-const MonthWidth = 20
+const (
+	MonthHeight = 8
+	MonthWidth  = 20
+)
 
 var (
 	monthstyle   = lipgloss.NewStyle().Height(MonthHeight)
