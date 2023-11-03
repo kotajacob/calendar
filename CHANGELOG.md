@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0]
 ### Added
+- Full year view mode.
 - Ability to configure controls.
+- Mousewheel support.
+- A help menu: "?".
 - Toggle preview visibility: "p".
 - Copy selected date to clipboard: "y".
 - Back to start of week: "b" / "H".
@@ -14,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Start of next week: "w".
 - Jump down one month: "ctrl+d".
 - Jump up one month: "ctrl+u".
+- Selecting a date with cli args.
 
 ## [0.1.0]
 ### Added
