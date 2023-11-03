@@ -1,3 +1,5 @@
+// License: GPL-3.0-only
+// (c) 2022 Dakota Walsh <kota@nilsu.org>
 package main
 
 import (
@@ -13,7 +15,7 @@ func TestParseArgs(t *testing.T) {
 	}
 	now := time.Date(
 		2006,
-		time.Month(01),
+		time.Month(0o1),
 		2,
 		0, 0, 0, 0,
 		utc,
@@ -139,5 +141,4 @@ func TestParseArgs(t *testing.T) {
 			t.Fatalf("expected: %v, got: %v", tc.want, got)
 		}
 	}
-
 }

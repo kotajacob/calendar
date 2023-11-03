@@ -27,6 +27,16 @@ var (
 	gridStyle    = lipgloss.NewStyle().Width(MonthWidth)
 )
 
+// Layout describes the arrangement of the month elements.
+type Layout uint8
+
+const (
+	// LayoutColumn is when a column of month elements should be shown.
+	LayoutColumn Layout = iota
+	// LayoutGrid is when a grid of a full year of months should be shown.
+	LayoutGrid
+)
+
 // Month is the Bubble Tea model for this month element.
 type Month struct {
 	date      time.Time
@@ -34,14 +44,14 @@ type Month struct {
 	selected  time.Time
 	config    *config.Config
 	id        string
-	showYear  bool
+	layout    Layout
 	isFocused bool
 }
 
 // New creates a new month model.
 func New(
 	date, today, selected time.Time,
-	showYear bool,
+	layout Layout,
 	conf *config.Config,
 ) Month {
 	return Month{
@@ -49,7 +59,7 @@ func New(
 		date:     date,
 		today:    today,
 		selected: selected,
-		showYear: showYear,
+		layout:   layout,
 		config:   conf,
 	}
 }
@@ -66,26 +76,7 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 		if !m.isFocused {
 			return m, nil
 		}
-		switch {
-		case m.config.KeySelectLeft.Contains(msg.String()):
-			m.selected = m.selected.AddDate(0, 0, -1)
-		case m.config.KeySelectRight.Contains(msg.String()):
-			m.selected = m.selected.AddDate(0, 0, 1)
-		case m.config.KeySelectDown.Contains(msg.String()):
-			m.selected = m.selected.AddDate(0, 0, 7)
-		case m.config.KeySelectUp.Contains(msg.String()):
-			m.selected = m.selected.AddDate(0, 0, -7)
-		case m.config.KeyLastSunday.Contains(msg.String()):
-			m.selected = date.LastSunday(m.selected)
-		case m.config.KeyNextSaturday.Contains(msg.String()):
-			m.selected = date.NextSaturday(m.selected)
-		case m.config.KeyNextSunday.Contains(msg.String()):
-			m.selected = date.NextSunday(m.selected)
-		case m.config.KeyMonthDown.Contains(msg.String()):
-			m.selected = date.NextMonth(m.selected)
-		case m.config.KeyMonthUp.Contains(msg.String()):
-			m.selected = date.LastMonth(m.selected)
-		}
+		m.move(msg)
 	case tea.MouseMsg:
 		switch msg.Type {
 		case tea.MouseWheelUp:
@@ -174,7 +165,7 @@ func (m Month) View() string {
 func (m Month) heading() string {
 	var heading strings.Builder
 	heading.WriteString(m.date.Month().String())
-	if m.showYear {
+	if m.layout == LayoutColumn {
 		heading.WriteString(" ")
 		heading.WriteString(strconv.Itoa(m.date.Year()))
 	}
@@ -237,7 +228,7 @@ func (m Month) String() string {
 	b.WriteString(fmt.Sprintln("today:", m.today))
 	b.WriteString(fmt.Sprintln("selected:", m.selected))
 	b.WriteString(fmt.Sprintln("id:", m.id))
-	b.WriteString(fmt.Sprintln("show year:", m.showYear))
+	b.WriteString(fmt.Sprintln("layout:", m.layout))
 	b.WriteString(fmt.Sprintln("is focused:", m.isFocused))
 	return b.String()
 }

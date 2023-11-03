@@ -40,7 +40,7 @@ func (c Calendar) resizeOne() []month.Month {
 		c.selected,
 		c.today,
 		c.selected,
-		true,
+		month.LayoutColumn,
 		c.config,
 	)}
 }
@@ -54,21 +54,21 @@ func (c Calendar) resizeThree() []month.Month {
 				date.LastMonth(c.selected),
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 			month.New(
 				c.selected,
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 			month.New(
 				date.NextMonth(c.selected),
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 		}
@@ -78,21 +78,21 @@ func (c Calendar) resizeThree() []month.Month {
 				c.selected,
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 			month.New(
 				date.NextMonth(c.selected),
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 			month.New(
 				date.NextMonth(date.NextMonth(c.selected)),
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 		}
@@ -102,21 +102,21 @@ func (c Calendar) resizeThree() []month.Month {
 				date.LastMonth(date.LastMonth(c.selected)),
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 			month.New(
 				date.LastMonth(c.selected),
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 			month.New(
 				c.selected,
 				c.today,
 				c.selected,
-				true,
+				month.LayoutColumn,
 				c.config,
 			),
 		}
@@ -132,7 +132,7 @@ func (c Calendar) resizeTwelve() []month.Month {
 				m,
 				c.today,
 				c.selected,
-				false,
+				month.LayoutGrid,
 				c.config,
 			))
 		} else {
@@ -140,7 +140,7 @@ func (c Calendar) resizeTwelve() []month.Month {
 				m,
 				c.today,
 				c.selected,
-				false,
+				month.LayoutGrid,
 				c.config,
 			))
 		}

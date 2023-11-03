@@ -24,8 +24,14 @@ import (
 type previewMode uint8
 
 const (
+	// previewModeShown is when the preview window is displayed, but not
+	// currently focused.
 	previewModeShown previewMode = iota
+	// previewModeFocused is when the preview window is both displayed and
+	// currently focused.
 	previewModeFocused
+	// previewModeHidden is when the preview window is hidden and thus cannot
+	// be focused.
 	previewModeHidden
 )
 
@@ -59,7 +65,7 @@ func New(selected time.Time, conf *config.Config) Calendar {
 			PaddingLeft(conf.LeftPadding).
 			PaddingRight(conf.RightPadding),
 		months: []month.Month{
-			month.New(selected, now, selected, true, conf),
+			month.New(selected, now, selected, month.LayoutColumn, conf),
 		},
 		config: conf,
 	}

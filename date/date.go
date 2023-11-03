@@ -105,3 +105,15 @@ func NextSaturday(t time.Time) time.Time {
 		t.Location(),
 	)
 }
+
+// LastWeek returns true if the date is in the last week of the month
+// for time t.
+func LastWeek(t time.Time) bool {
+	return t.AddDate(0, 0, 7).Month() != t.Month()
+}
+
+// FirstWeek returns true if the date is in the first week of the month
+// for time t.
+func FirstWeek(t time.Time) bool {
+	return t.AddDate(0, 0, -7).Month() != t.Month()
+}
