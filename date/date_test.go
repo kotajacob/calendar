@@ -1,6 +1,6 @@
 // License: GPL-3.0-only
 // (c) 2022 Dakota Walsh <kota@nilsu.org>
-package month
+package date
 
 import (
 	"testing"
@@ -22,13 +22,13 @@ func TestSameMonth(t *testing.T) {
 			want: true,
 		},
 		{
-			x:    firstDay(now),
-			y:    firstDay(now),
+			x:    FirstDay(now),
+			y:    FirstDay(now),
 			want: true,
 		},
 		{
-			x:    firstDay(now),
-			y:    lastDay(now),
+			x:    FirstDay(now),
+			y:    LastDay(now),
 			want: true,
 		},
 		{
@@ -42,7 +42,7 @@ func TestSameMonth(t *testing.T) {
 				0,
 				now.Location(),
 			),
-			y:    firstDay(now),
+			y:    FirstDay(now),
 			want: false,
 		},
 	}
