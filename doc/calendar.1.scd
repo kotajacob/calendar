@@ -57,6 +57,9 @@ widget(s) with the selected day's note. You can configure a path to store these
 notes and press enter to open them in your favorite editor. See
 *calendar-config*(5) for configuration details.
 
+If you press p (configurable) to disable the preview and your terminal is wide
+enough you will be shown a full year view.
+
 # SEE ALSO
 
 *calendar-config*(5)
