@@ -94,7 +94,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 		case c.config.KeyEditNote.Contains(msg.String()):
 			path := filepath.Join(os.ExpandEnv(c.config.NoteDir), c.selected.Format("2006-01-02")) + ".md"
 			cmd := tea.ExecProcess(
-				exec.Command("vim", path),
+				exec.Command(c.config.Editor, path),
 				func(err error) tea.Msg {
 					return editorFinishedMsg{err: err}
 				})
