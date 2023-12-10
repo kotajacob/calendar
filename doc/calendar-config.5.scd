@@ -15,7 +15,7 @@ Each line in the config file is a pairing of a option and a value separated with
 "=". Lines beginning with # are considered comments and are ignored, as are
 empty lines.
 
-# NOTE OPTIONS
+# GENERAL OPTIONS
 
 *NoteDir*
 	NoteDir should be set to the directory where you'd like to store
@@ -29,6 +29,16 @@ empty lines.
 *Editor*
 	Used to specify an editor to use when opening notes. If unspecified, we will
 	respect the environment variables VISUAL or EDITOR or fallback to using vi.
+
+	Default: none
+
+*HolidayLists*
+	Used to specify one or more files containing a list of important dates and
+	colors to signify them in the calendar. Each line in a holiday file should
+	be a date in either the format: 2006-02-28 or 02-28 followed by a space and
+	then a color. Optionally, the color may then be followed with a space and a
+	message which will display for the holiday. See below for how to specify a
+	color code.
 
 	Default: none
 

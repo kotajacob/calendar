@@ -55,3 +55,15 @@ KeyNextSunday=["w"]
 KeyNextSaturday=["e", "L"]
 KeyMonthUp=["ctrl+u"]
 KeyMonthDown=["ctrl+d"]
+
+# One or more files containing a list of important dates and a color they
+# should be diplayed with. Each line should be a date in either the format:
+# 2006-02-28 or 02-28 followed by a space and then a color.
+#
+# Colors can be specified in a few different ways. Terminal support may vary.
+# By default, all colors are specified using ANSI 16 which has the best support.
+#
+# ANSI 16 colors: "5", "9", "12" (numbers 0-15)
+# ANSI 256 Colors: "86", "201", "202" (numbers 16-255)
+# True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
+# HolidayLists = ["$HOME/.config/calendar/public-holidays", "$HOME/.config/calendar/birthdays"]

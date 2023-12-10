@@ -40,6 +40,7 @@ type Config struct {
 	KeyNextSaturday      Control
 	KeyMonthUp           Control
 	KeyMonthDown         Control
+	HolidayLists         []string
 }
 
 // Control is a slice of strings representing the keys bound to a given action.
@@ -83,6 +84,7 @@ func Default() *Config {
 		KeyNextSaturday:   []string{"e", "L"},
 		KeyMonthUp:        []string{"ctrl+u"},
 		KeyMonthDown:      []string{"ctrl+d"},
+		HolidayLists:      []string{""},
 	}
 }
 

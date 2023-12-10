@@ -11,6 +11,7 @@ import (
 
 	"git.sr.ht/~kota/calendar/config"
 	"git.sr.ht/~kota/calendar/date"
+	"git.sr.ht/~kota/calendar/holiday"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
@@ -42,6 +43,7 @@ type Month struct {
 	date      time.Time
 	today     time.Time
 	selected  time.Time
+	holidays  holiday.Holidays
 	config    *config.Config
 	id        string
 	layout    Layout
@@ -52,6 +54,7 @@ type Month struct {
 func New(
 	date, today, selected time.Time,
 	layout Layout,
+	holidays holiday.Holidays,
 	conf *config.Config,
 ) Month {
 	return Month{
@@ -60,6 +63,7 @@ func New(
 		today:    today,
 		selected: selected,
 		layout:   layout,
+		holidays: holidays,
 		config:   conf,
 	}
 }
@@ -195,6 +199,7 @@ func (m Month) grid() string {
 	// Render the grid of days.
 	for i := 1; i <= last.Day(); i++ {
 		day := lipgloss.NewStyle()
+		// Selected or inactive.
 		if date.SameMonth(m.date, m.selected) {
 			if i == m.selected.Day() {
 				day = day.Copy().Reverse(true)
@@ -204,6 +209,20 @@ func (m Month) grid() string {
 				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
 			)
 		}
+		// Render holidays.
+		if h, ok := m.holidays.Match(time.Date(
+			m.date.Year(),
+			m.date.Month(),
+			i,
+			0,
+			0,
+			0,
+			0,
+			m.date.Location(),
+		)); ok {
+			day = day.Copy().Foreground(lipgloss.Color(h.Color))
+		}
+		// Render today.
 		if date.SameMonth(m.date, m.today) && i == m.today.Day() {
 			day = day.Copy().Foreground(lipgloss.Color(m.config.TodayColor))
 		}

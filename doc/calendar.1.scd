@@ -60,6 +60,12 @@ notes and press enter to open them in your favorite editor. See
 If you press p (configurable) to disable the preview and your terminal is wide
 enough you will be shown a full year view.
 
+# HOLIDAYS
+
+You can configure a list of yearly dates, such as birthdays, holidays, or other
+important re-occuring events which will be displayed in a configurable color
+with an optional message. See *calendar-config*(5) for configuration details.
+
 # SEE ALSO
 
 *calendar-config*(5)

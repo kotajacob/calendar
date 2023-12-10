@@ -41,6 +41,7 @@ func (c Calendar) resizeOne() []month.Month {
 		c.today,
 		c.selected,
 		month.LayoutColumn,
+		c.holidays,
 		c.config,
 	)}
 }
@@ -55,6 +56,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 			month.New(
@@ -62,6 +64,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 			month.New(
@@ -69,6 +72,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 		}
@@ -79,6 +83,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 			month.New(
@@ -86,6 +91,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 			month.New(
@@ -93,6 +99,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 		}
@@ -103,6 +110,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 			month.New(
@@ -110,6 +118,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 			month.New(
@@ -117,6 +126,7 @@ func (c Calendar) resizeThree() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutColumn,
+				c.holidays,
 				c.config,
 			),
 		}
@@ -133,6 +143,7 @@ func (c Calendar) resizeTwelve() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutGrid,
+				c.holidays,
 				c.config,
 			))
 		} else {
@@ -141,6 +152,7 @@ func (c Calendar) resizeTwelve() []month.Month {
 				c.today,
 				c.selected,
 				month.LayoutGrid,
+				c.holidays,
 				c.config,
 			))
 		}

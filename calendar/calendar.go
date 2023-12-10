@@ -13,6 +13,7 @@ import (
 
 	"git.sr.ht/~kota/calendar/config"
 	"git.sr.ht/~kota/calendar/date"
+	"git.sr.ht/~kota/calendar/holiday"
 	"git.sr.ht/~kota/calendar/month"
 	"git.sr.ht/~kota/calendar/preview"
 	"github.com/atotto/clipboard"
@@ -50,6 +51,7 @@ type Calendar struct {
 	months      []month.Month
 	preview     preview.Preview
 	previewMode previewMode
+	holidays    holiday.Holidays
 	height      int
 	width       int
 	initialized bool
@@ -58,6 +60,7 @@ type Calendar struct {
 // New creates a new calendar model.
 func New(selected time.Time, conf *config.Config) Calendar {
 	now := time.Now()
+	holidays := holiday.Load(conf.HolidayLists)
 	m := Calendar{
 		today:    now,
 		selected: selected,
@@ -65,9 +68,17 @@ func New(selected time.Time, conf *config.Config) Calendar {
 			PaddingLeft(conf.LeftPadding).
 			PaddingRight(conf.RightPadding),
 		months: []month.Month{
-			month.New(selected, now, selected, month.LayoutColumn, conf),
+			month.New(
+				selected,
+				now,
+				selected,
+				month.LayoutColumn,
+				holidays,
+				conf,
+			),
 		},
-		config: conf,
+		holidays: holidays,
+		config:   conf,
 	}
 	m.SetFocus(previewModeShown)
 	return m
@@ -112,7 +123,7 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 		c.height = msg.Height
 
 		if !c.initialized {
-			note := loadNote(c.selected, c.config.NoteDir)
+			note := loadNote(c.selected, c.holidays, c.config.NoteDir)
 			c.preview = preview.New(note, c.config)
 			c.initialized = true
 		}
@@ -169,7 +180,7 @@ func (c Calendar) Select(t time.Time) Calendar {
 		c = c.resize()
 	}
 
-	c.preview = c.preview.SetContent(loadNote(t, c.config.NoteDir))
+	c.preview = c.preview.SetContent(loadNote(t, c.holidays, c.config.NoteDir))
 	if c.previewMode != previewModeHidden {
 		c.SetFocus(previewModeShown)
 	}
@@ -232,13 +243,20 @@ func (c *Calendar) SetToday(t time.Time) {
 // expanded appropriately. If the file is missing it is simply treated as an
 // empty file. All other errors will return the error string itself (which is
 // meant to be displayed to the user).
-func loadNote(t time.Time, dir string) string {
+//
+// The holidays map is checked to see if any message should be prefixed at the
+// top of the note.
+func loadNote(t time.Time, holidays holiday.Holidays, dir string) string {
 	path := filepath.Join(os.ExpandEnv(dir), t.Format("2006-01-02")) + ".md"
 	data, err := os.ReadFile(path)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		data = []byte(err.Error())
 	}
-	return string(data)
+	note := string(data)
+	if h, ok := holidays.Match(t); ok {
+		note = h.Message + "\n\n" + note
+	}
+	return note
 }
 
 // renderMonths displays a grid of months.
@@ -246,7 +264,11 @@ func (c Calendar) renderMonths() string {
 	var rows []string
 	switch len(c.months) {
 	case 12:
-		rows = append(rows, c.selected.Format("2006"))
+		banner := c.selected.Format("2006")
+		if h, ok := c.holidays.Match(c.selected); ok {
+			banner = h.Message + " " + banner
+		}
+		rows = append(rows, banner)
 		for i := 0; i < 3; i++ {
 			var column []string
 			column = append(column, c.months[0+i*4].View()+strings.Repeat(" ",
