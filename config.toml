@@ -7,8 +7,13 @@
 # ANSI 16 colors: "5", "9", "12" (numbers 0-15)
 # ANSI 256 Colors: "86", "201", "202" (numbers 16-255)
 # True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
-TodayColor = "2"
-InactiveColor = "8"
+TodayStyle.Color = "2"
+TodayStyle.Bold = false
+TodayStyle.Italic = false
+
+InactiveStyle.Color = "8"
+InactiveStyle.Bold = false
+InactiveStyle.Italic = false
 
 # We use one more padding on the left to account for the border around the
 # preview window. Looks a bit unbalanced without it, but feel free to tweak as

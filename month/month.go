@@ -107,13 +107,7 @@ func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 					year := t.Year()
 					month := t.Month()
 					m.selected = time.Date(
-						year,
-						month,
-						day,
-						0,
-						0,
-						0,
-						0,
+						year, month, day, 0, 0, 0, 0,
 						m.date.Location(),
 					)
 					break
@@ -179,7 +173,7 @@ func (m Month) heading() string {
 	style := headingStyle.Copy()
 	if !date.SameMonth(m.date, m.selected) {
 		style.Inherit(
-			lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
+			m.config.InactiveStyle.Export(lipgloss.NewStyle()),
 		)
 	}
 	return style.Render(heading.String())
@@ -206,25 +200,19 @@ func (m Month) grid() string {
 			}
 		} else {
 			day = day.Inherit(
-				lipgloss.NewStyle().Foreground(lipgloss.Color(m.config.InactiveColor)),
+				m.config.InactiveStyle.Export(lipgloss.NewStyle()),
 			)
 		}
 		// Render holidays.
 		if h, ok := m.holidays.Match(time.Date(
-			m.date.Year(),
-			m.date.Month(),
-			i,
-			0,
-			0,
-			0,
-			0,
+			m.date.Year(), m.date.Month(), i, 0, 0, 0, 0,
 			m.date.Location(),
 		)); ok {
 			day = day.Copy().Foreground(lipgloss.Color(h.Color))
 		}
 		// Render today.
 		if date.SameMonth(m.date, m.today) && i == m.today.Day() {
-			day = day.Copy().Foreground(lipgloss.Color(m.config.TodayColor))
+			day = m.config.TodayStyle.Export(day.Copy())
 		}
 		b.WriteString(
 			day.Render(zone.Mark(

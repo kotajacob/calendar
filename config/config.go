@@ -8,13 +8,14 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	"github.com/charmbracelet/lipgloss"
 	gap "github.com/muesli/go-app-paths"
 )
 
 // Config represents the toml configuration file.
 type Config struct {
-	TodayColor           string
-	InactiveColor        string
+	TodayStyle           Style
+	InactiveStyle        Style
 	NoteDir              string
 	Editor               string
 	LeftPadding          int
@@ -43,6 +44,23 @@ type Config struct {
 	HolidayLists         []string
 }
 
+// Style represents how a type of date should be displayed.
+type Style struct {
+	Color  string
+	Bold   bool
+	Italic bool
+}
+
+// Export takes a base lipgloss.Style and makes the changes needed based on this configured Style.
+func (s Style) Export(base lipgloss.Style) lipgloss.Style {
+	if s.Color != "" {
+		base = base.Foreground(lipgloss.Color(s.Color))
+	}
+	base = base.Bold(s.Bold)
+	base = base.Italic(s.Italic)
+	return base
+}
+
 // Control is a slice of strings representing the keys bound to a given action.
 type Control []string
 
@@ -59,8 +77,8 @@ func (c Control) Contains(key string) bool {
 // Default returns the default configuration.
 func Default() *Config {
 	return &Config{
-		TodayColor:        "2",
-		InactiveColor:     "8",
+		TodayStyle:        Style{Color: "2"},
+		InactiveStyle:     Style{Color: "8"},
 		LeftPadding:       2,
 		RightPadding:      1,
 		NoteDir:           "$HOME/.local/share/calendar",

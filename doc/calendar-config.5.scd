@@ -42,25 +42,49 @@ empty lines.
 
 	Default: none
 
-# COLOR OPTIONS
+# STYLE OPTIONS
 
-Colors can be specified in a few different ways. Terminal support may vary. By
-default, all colors are specified using ANSI 16 which has the best support.
+The way days are displayed in calendar is quite customizable. If you would like
+today's date to be bold or italicized instead of colored you can do that.
+
+The colors themselves can be specified in a few different ways. Terminal
+support may vary. By default, all colors are specified using ANSI 16 which has
+the best support.
 ```
 ANSI 16 colors: "5", "9", "12" (numbers 0-15)
 ANSI 256 Colors: "86", "201", "202" (numbers 16-255)
 True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
 ```
 
-*TodayColor*
+*TodayStyle.Color*
 	Foreground color used for the current date.
 
 	Default: "2"
 
-*InactiveColor*
+*TodayStyle.Bold*
+  Display the current date as bold.
+
+  Default: false
+
+*TodayStyle.Italic*
+  Display the current date with italics.
+
+  Default: false
+
+*InactiveStyle.Color*
 	Foreground color used in inactive months.
 
 	Default: "8"
+
+*InactiveStyle.Bold*
+  Display the inactive months as bold.
+
+  Default: false
+
+*InactiveStyle.Italic*
+  Display the inactive months with italics.
+
+  Default: false
 
 # SPACING OPTIONS
 
@@ -190,7 +214,7 @@ https://github.com/charmbracelet/bubbletea/blob/94d6f5079e07301046e38f6c59cb286d
 
 # SEE ALSO
 
-*calendar-config*(5)
+*calendar*(1)
 
 # AUTHORS
 

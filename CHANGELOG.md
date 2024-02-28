@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
+- Change color configuration settings to general style configuration
 - Add holiday display feature
 
 ## [0.2.0]
