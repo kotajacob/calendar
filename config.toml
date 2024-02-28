@@ -11,6 +11,10 @@ TodayStyle.Color = "2"
 TodayStyle.Bold = false
 TodayStyle.Italic = false
 
+NotedStyle.Color = ""
+NotedStyle.Bold = false
+NotedStyle.Italic = false
+
 InactiveStyle.Color = "8"
 InactiveStyle.Bold = false
 InactiveStyle.Italic = false

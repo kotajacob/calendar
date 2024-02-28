@@ -235,9 +235,6 @@ func (c *Calendar) SetToday(t time.Time) {
 }
 
 // loadNote reads a note file for a given time.
-// The given path should describe where the note would be located for this
-// predefined time:
-// January 2, 15:04:05, 2006, in time zone seven hours west of GMT
 //
 // Environment variable, such as $HOME may be used in the path and will be
 // expanded appropriately. If the file is missing it is simply treated as an

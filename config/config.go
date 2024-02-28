@@ -16,6 +16,7 @@ import (
 type Config struct {
 	TodayStyle           Style
 	InactiveStyle        Style
+	NotedStyle           Style
 	NoteDir              string
 	Editor               string
 	LeftPadding          int
@@ -61,6 +62,20 @@ func (s Style) Export(base lipgloss.Style) lipgloss.Style {
 	return base
 }
 
+// Blank returns true if the Style has no color and is not bold or italicized.
+func (s Style) Blank() bool {
+	if s.Color != "" {
+		return false
+	}
+	if s.Bold {
+		return false
+	}
+	if s.Italic {
+		return false
+	}
+	return true
+}
+
 // Control is a slice of strings representing the keys bound to a given action.
 type Control []string
 
@@ -79,6 +94,7 @@ func Default() *Config {
 	return &Config{
 		TodayStyle:        Style{Color: "2"},
 		InactiveStyle:     Style{Color: "8"},
+		NotedStyle:        Style{},
 		LeftPadding:       2,
 		RightPadding:      1,
 		NoteDir:           "$HOME/.local/share/calendar",

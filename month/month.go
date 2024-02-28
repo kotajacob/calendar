@@ -4,7 +4,12 @@ package month
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"io/fs"
+	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -203,6 +208,15 @@ func (m Month) grid() string {
 				m.config.InactiveStyle.Export(lipgloss.NewStyle()),
 			)
 		}
+		// Render noted days.
+		if !m.config.NotedStyle.Blank() {
+			if hasNote(time.Date(
+				m.date.Year(), m.date.Month(), i, 0, 0, 0, 0,
+				m.date.Location(),
+			), m.config.NoteDir) {
+				day = m.config.NotedStyle.Export(day.Copy())
+			}
+		}
 		// Render holidays.
 		if h, ok := m.holidays.Match(time.Date(
 			m.date.Year(), m.date.Month(), i, 0, 0, 0, 0,
@@ -238,4 +252,30 @@ func (m Month) String() string {
 	b.WriteString(fmt.Sprintln("layout:", m.layout))
 	b.WriteString(fmt.Sprintln("is focused:", m.isFocused))
 	return b.String()
+}
+
+// hasNote stats a note file for a given time.
+// If the files exists, but is empty it is counted as not existing.
+//
+// Environment variable, such as $HOME may be used in the path and will be
+// expanded appropriately. If the file is missing it is simply treated as an
+// empty file. All other errors will return the error string itself (which is
+// meant to be displayed to the user).
+func hasNote(t time.Time, dir string) bool {
+	path := filepath.Join(os.ExpandEnv(dir), t.Format("2006-01-02")) + ".md"
+	stat, err := os.Stat(path)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return false
+		} else {
+			log.Println(err)
+		}
+	}
+	if stat.IsDir() {
+		return false
+	}
+	if stat.Size() == 0 {
+		return false
+	}
+	return true
 }

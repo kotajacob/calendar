@@ -71,6 +71,21 @@ True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
 
   Default: false
 
+*NotedStyle.Color*
+	Foreground color used on days which have a note.
+
+	Default: ""
+
+*NotedStyle.Bold*
+  Display the days which have a note as bold.
+
+  Default: false
+
+*NotedStyle.Italic*
+  Display the days which have a note with italics.
+
+  Default: false
+
 *InactiveStyle.Color*
 	Foreground color used in inactive months.
 

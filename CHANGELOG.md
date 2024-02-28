@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
-- Change color configuration settings to general style configuration
+- Ability to style days which have notes written differently
 - Add holiday display feature
+
+### Changed
+- Changed color configuration settings to general style configuration
 
 ## [0.2.0]
 ### Added
