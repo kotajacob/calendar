@@ -62,14 +62,14 @@ True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
 	Default: "2"
 
 *TodayStyle.Bold*
-  Display the current date as bold.
+	Display the current date as bold.
 
-  Default: false
+	Default: false
 
 *TodayStyle.Italic*
-  Display the current date with italics.
+	Display the current date with italics.
 
-  Default: false
+	Default: false
 
 *NotedStyle.Color*
 	Foreground color used on days which have a note.
@@ -77,14 +77,14 @@ True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
 	Default: ""
 
 *NotedStyle.Bold*
-  Display the days which have a note as bold.
+	Display the days which have a note as bold.
 
-  Default: false
+	Default: false
 
 *NotedStyle.Italic*
-  Display the days which have a note with italics.
+	Display the days which have a note with italics.
 
-  Default: false
+	Default: false
 
 *InactiveStyle.Color*
 	Foreground color used in inactive months.
@@ -92,14 +92,14 @@ True Color (16,777,216 colors; 24-bit): "#0000FF", "#04B575", "#3C3C3C"
 	Default: "8"
 
 *InactiveStyle.Bold*
-  Display the inactive months as bold.
+	Display the inactive months as bold.
 
-  Default: false
+	Default: false
 
 *InactiveStyle.Italic*
-  Display the inactive months with italics.
+	Display the inactive months with italics.
 
-  Default: false
+	Default: false
 
 # SPACING OPTIONS
 
