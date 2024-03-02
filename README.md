@@ -20,6 +20,9 @@ If your terminal is wide enough you will see a preview window next to the month
 widget(s) with the selected day's note. You can configure a path to store these
 notes and press `enter` to open them in your favorite editor.
 
+Holidays and keywords can be configured to show certain days in different
+colors. See `man 5 calendar-config` for more details.
+
 ## Build and Install
 A Makefile is provided for easy installation. You can use it to tweak the
 install path and compiler flags. If you know of a distrobution package get in

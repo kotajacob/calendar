@@ -4,12 +4,8 @@ package month
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"io/fs"
 	"log"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -45,17 +41,20 @@ const (
 
 // Month is the Bubble Tea model for this month element.
 type Month struct {
-	date      time.Time
-	today     time.Time
-	selected  time.Time
-	holidays  holiday.Holidays
-	config    *config.Config
-	id        string
-	layout    Layout
-	isFocused bool
+	date       time.Time
+	today      time.Time
+	selected   time.Time
+	styledDays styledDays
+	holidays   holiday.Holidays
+	config     *config.Config
+	id         string
+	layout     Layout
+	isFocused  bool
 }
 
 // New creates a new month model.
+// The list of styledDays is not calculated on creation. The Init method must
+// be called to parse and load these concurrently.
 func New(
 	date, today, selected time.Time,
 	layout Layout,
@@ -74,13 +73,18 @@ func New(
 }
 
 // Init the month in Bubble Tea.
+// Reads holidays and keywords to build out a list of styledDays.
 func (m Month) Init() tea.Cmd {
-	return nil
+	return m.loadStyledDays
 }
 
 // Updates the month in the Bubble Tea update loop.
 func (m Month) Update(msg tea.Msg) (Month, tea.Cmd) {
 	switch msg := msg.(type) {
+	case styledDaysMsg:
+		if date.SameMonth(m.date, msg.month) {
+			m.styledDays = msg.styledDays
+		}
 	case tea.KeyMsg:
 		if !m.isFocused {
 			return m, nil
@@ -208,21 +212,13 @@ func (m Month) grid() string {
 				m.config.InactiveStyle.Export(lipgloss.NewStyle()),
 			)
 		}
-		// Render noted days.
-		if !m.config.NotedStyle.Blank() {
-			if hasNote(time.Date(
-				m.date.Year(), m.date.Month(), i, 0, 0, 0, 0,
-				m.date.Location(),
-			), m.config.NoteDir) {
-				day = m.config.NotedStyle.Export(day.Copy())
-			}
-		}
-		// Render holidays.
-		if h, ok := m.holidays.Match(time.Date(
+		// Render styled days.
+		if s, ok := m.styledDays.Match(time.Date(
 			m.date.Year(), m.date.Month(), i, 0, 0, 0, 0,
 			m.date.Location(),
 		)); ok {
-			day = day.Copy().Foreground(lipgloss.Color(h.Color))
+			log.Println("in", m.date.Format("2006-01-02"), "matched", i)
+			day = s.Export(day.Copy())
 		}
 		// Render today.
 		if date.SameMonth(m.date, m.today) && i == m.today.Day() {
@@ -252,30 +248,4 @@ func (m Month) String() string {
 	b.WriteString(fmt.Sprintln("layout:", m.layout))
 	b.WriteString(fmt.Sprintln("is focused:", m.isFocused))
 	return b.String()
-}
-
-// hasNote stats a note file for a given time.
-// If the files exists, but is empty it is counted as not existing.
-//
-// Environment variable, such as $HOME may be used in the path and will be
-// expanded appropriately. If the file is missing it is simply treated as an
-// empty file. All other errors will return the error string itself (which is
-// meant to be displayed to the user).
-func hasNote(t time.Time, dir string) bool {
-	path := filepath.Join(os.ExpandEnv(dir), t.Format("2006-01-02")) + ".md"
-	stat, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			return false
-		} else {
-			log.Println(err)
-		}
-	}
-	if stat.IsDir() {
-		return false
-	}
-	if stat.Size() == 0 {
-		return false
-	}
-	return true
 }

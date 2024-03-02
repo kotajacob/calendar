@@ -7,10 +7,11 @@ import (
 
 	"git.sr.ht/~kota/calendar/date"
 	"git.sr.ht/~kota/calendar/month"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // resize the number of months being displayed to fill the window size.
-func (c Calendar) resize() Calendar {
+func (c Calendar) resize() (Calendar, tea.Cmd) {
 	want := 1
 	if c.height > 3*month.MonthHeight {
 		want = 3
@@ -30,9 +31,15 @@ func (c Calendar) resize() Calendar {
 		c.months = c.resizeOne()
 	}
 
+	// Call Init for each month.
+	var cmds []tea.Cmd
+	for _, m := range c.months {
+		cmds = append(cmds, m.Init())
+	}
+
 	// Restore focus. It gets lost when resizing.
 	c.SetFocus(c.previewMode)
-	return c
+	return c, tea.Batch(cmds...)
 }
 
 func (c Calendar) resizeOne() []month.Month {

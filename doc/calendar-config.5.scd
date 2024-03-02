@@ -42,6 +42,15 @@ empty lines.
 
 	Default: none
 
+*Keywords*
+	A list of keywords, each with a color, which will be searched for in every
+	note file and will color the date. You could use this to color days
+	containing "appointment" green for example. The data structure in the config
+	is an array of objects where each object has a Keyword string field and a
+	Color string field. The color format is described below.
+
+	Default: none
+
 # STYLE OPTIONS
 
 The way days are displayed in calendar is quite customizable. If you would like

@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 
+	"git.sr.ht/~kota/calendar/keyword"
 	"github.com/BurntSushi/toml"
 	"github.com/charmbracelet/lipgloss"
 	gap "github.com/muesli/go-app-paths"
@@ -43,6 +44,7 @@ type Config struct {
 	KeyMonthUp           Control
 	KeyMonthDown         Control
 	HolidayLists         []string
+	Keywords             keyword.Keywords
 }
 
 // Style represents how a type of date should be displayed.

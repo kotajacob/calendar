@@ -3,8 +3,6 @@
 package calendar
 
 import (
-	"errors"
-	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,7 +12,9 @@ import (
 	"git.sr.ht/~kota/calendar/config"
 	"git.sr.ht/~kota/calendar/date"
 	"git.sr.ht/~kota/calendar/holiday"
+	"git.sr.ht/~kota/calendar/keyword"
 	"git.sr.ht/~kota/calendar/month"
+	"git.sr.ht/~kota/calendar/note"
 	"git.sr.ht/~kota/calendar/preview"
 	"github.com/atotto/clipboard"
 	tea "github.com/charmbracelet/bubbletea"
@@ -52,6 +52,7 @@ type Calendar struct {
 	preview     preview.Preview
 	previewMode previewMode
 	holidays    holiday.Holidays
+	keywords    keyword.Keywords
 	height      int
 	width       int
 	initialized bool
@@ -86,11 +87,16 @@ func New(selected time.Time, conf *config.Config) Calendar {
 
 // Init the calendar in Bubble Tea.
 func (c Calendar) Init() tea.Cmd {
-	return nil
+	var cmds []tea.Cmd
+	for _, m := range c.months {
+		cmds = append(cmds, m.Init())
+	}
+	return tea.Batch(cmds...)
 }
 
 // Update the calendar in the Bubble Tea update loop.
 func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
+	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -114,7 +120,9 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 			c.ToggleFocus()
 		case c.config.KeyTogglePreview.Contains(msg.String()):
 			c.TogglePreview()
-			c = c.resize()
+			var cmd tea.Cmd
+			c, cmd = c.resize()
+			cmds = append(cmds, cmd)
 		case c.config.KeyYankDate.Contains(msg.String()):
 			clipboard.WriteAll(c.selected.Format("2006-01-02"))
 		}
@@ -123,17 +131,26 @@ func (c Calendar) Update(msg tea.Msg) (Calendar, tea.Cmd) {
 		c.height = msg.Height
 
 		if !c.initialized {
-			note := loadNote(c.selected, c.holidays, c.config.NoteDir)
+			note := note.Load(c.selected, c.config.NoteDir)
+			note = c.holidays.Prefix(c.selected, note)
 			c.preview = preview.New(note, c.config)
 			c.initialized = true
 		}
 
-		c = c.resize()
+		var cmd tea.Cmd
+		c, cmd = c.resize()
+		cmds = append(cmds, cmd)
 	case editorFinishedMsg:
 		// Reload the note when the user exits their editor.
-		c = c.Select(c.selected)
+		var cmd tea.Cmd
+		c, cmd = c.Select(c.selected)
+		cmds = append(cmds, cmd)
 	}
-	return c.propagate(msg)
+
+	var cmd tea.Cmd
+	c, cmd = c.propagate(msg)
+	cmds = append(cmds, cmd)
+	return c, tea.Batch(cmds...)
 }
 
 // propagate an update to all children.
@@ -150,7 +167,9 @@ func (c Calendar) propagate(msg tea.Msg) (Calendar, tea.Cmd) {
 		// the selection of all other months to avoid letting the selection get
 		// out of sync!
 		if !month.Selected().Equal(c.selected) {
-			c = c.Select(month.Selected())
+			var cmd tea.Cmd
+			c, cmd = c.Select(month.Selected())
+			cmds = append(cmds, cmd)
 		}
 	}
 
@@ -163,7 +182,7 @@ func (c Calendar) propagate(msg tea.Msg) (Calendar, tea.Cmd) {
 
 // Select a different date. This updates the selection on the calendar, all of
 // it's months, and the preview window. It also sets the focus to the months.
-func (c Calendar) Select(t time.Time) Calendar {
+func (c Calendar) Select(t time.Time) (Calendar, tea.Cmd) {
 	c.selected = t
 
 	// If the selection has moved "off-screen" we need to rebuild the month
@@ -176,15 +195,18 @@ func (c Calendar) Select(t time.Time) Calendar {
 		c.months[i] = m.Select(t)
 	}
 
+	var cmd tea.Cmd
 	if offScreen {
-		c = c.resize()
+		c, cmd = c.resize()
 	}
 
-	c.preview = c.preview.SetContent(loadNote(t, c.holidays, c.config.NoteDir))
+	note := note.Load(t, c.config.NoteDir)
+	note = c.holidays.Prefix(t, note)
+	c.preview = c.preview.SetContent(note)
 	if c.previewMode != previewModeHidden {
 		c.SetFocus(previewModeShown)
 	}
-	return c
+	return c, cmd
 }
 
 // SetFocus sets the focus to the months or the preview window.
@@ -232,28 +254,6 @@ func (c *Calendar) SetToday(t time.Time) {
 	for id := range c.months {
 		c.months[id].SetToday(t)
 	}
-}
-
-// loadNote reads a note file for a given time.
-//
-// Environment variable, such as $HOME may be used in the path and will be
-// expanded appropriately. If the file is missing it is simply treated as an
-// empty file. All other errors will return the error string itself (which is
-// meant to be displayed to the user).
-//
-// The holidays map is checked to see if any message should be prefixed at the
-// top of the note.
-func loadNote(t time.Time, holidays holiday.Holidays, dir string) string {
-	path := filepath.Join(os.ExpandEnv(dir), t.Format("2006-01-02")) + ".md"
-	data, err := os.ReadFile(path)
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		data = []byte(err.Error())
-	}
-	note := string(data)
-	if h, ok := holidays.Match(t); ok {
-		note = h.Message + "\n\n" + note
-	}
-	return note
 }
 
 // renderMonths displays a grid of months.

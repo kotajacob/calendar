@@ -25,6 +25,14 @@ func (hs Holidays) Match(t time.Time) (Holiday, bool) {
 	return Holiday{}, false
 }
 
+// Prefix a note if the holiday matches a given date.
+func (hs Holidays) Prefix(t time.Time, note string) string {
+	if h, ok := hs.Match(t); ok {
+		note = h.Message + "\n\n" + note
+	}
+	return note
+}
+
 type Holiday struct {
 	Date    string
 	Color   string

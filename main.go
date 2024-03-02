@@ -35,7 +35,11 @@ type model struct {
 
 // Init the model in Bubble Tea.
 func (m model) Init() tea.Cmd {
-	return fiveMinutes()
+	cmds := []tea.Cmd{
+		m.calendar.Init(),
+		fiveMinutes(),
+	}
+	return tea.Batch(cmds...)
 }
 
 // mode describes if the calendar or the help menu should be shown.
