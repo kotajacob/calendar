@@ -47,14 +47,68 @@ func (m *Month) columnMove(msg tea.KeyMsg) {
 func (m *Month) gridMove(msg tea.KeyMsg) {
 	switch {
 	case m.config.KeySelectLeft.Contains(msg.String()):
-		m.selected = m.selected.AddDate(0, 0, -1)
+		m.selected = gridLeft(m.selected)
 	case m.config.KeySelectRight.Contains(msg.String()):
-		m.selected = m.selected.AddDate(0, 0, 1)
+		m.selected = gridRight(m.selected)
 	case m.config.KeySelectDown.Contains(msg.String()):
 		m.selected = gridDown(m.selected)
 	case m.config.KeySelectUp.Contains(msg.String()):
 		m.selected = gridUp(m.selected)
 	}
+}
+
+func gridLeft(t time.Time) time.Time {
+	first := date.FirstDay(t)
+	if t.Weekday() == 0 || t.Day() == first.Day() {
+		row := ((t.Day() - 1) + int(first.Weekday())) / 7
+
+		lm := date.LastMonth(t)
+		lmStart := date.FirstDay(lm)
+		lmEnd := date.LastDay(lm)
+		lmRows := (lmEnd.Day() + int(lmStart.Weekday())) / 7
+		if row >= lmRows {
+			return lmEnd
+		}
+
+		offset := int(6 - lmStart.Weekday())
+		return time.Date(
+			lmStart.Year(),
+			lmStart.Month(),
+			lmStart.Day()+offset+(row*7),
+			0, 0, 0, 0,
+			lmStart.Location(),
+		)
+	}
+	return t.AddDate(0, 0, -1)
+}
+
+func gridRight(t time.Time) time.Time {
+	last := date.LastDay(t)
+	if t.Weekday() == 6 || t.Day() == last.Day() {
+		first := date.FirstDay(t)
+		row := ((t.Day() - 1) + int(first.Weekday())) / 7
+
+		nm := date.NextMonth(t)
+		nmStart := date.FirstDay(nm)
+		nmEnd := date.LastDay(nm)
+		nmRows := (nmEnd.Day() + int(nmStart.Weekday())) / 7
+		if row == 0 {
+			return nmStart
+		}
+		if row >= nmRows {
+			row = nmRows
+		}
+
+		offset := int(nmStart.Weekday())
+		return time.Date(
+			nmStart.Year(),
+			nmStart.Month(),
+			nmStart.Day()-offset+(row*7),
+			0, 0, 0, 0,
+			nmStart.Location(),
+		)
+	}
+	return t.AddDate(0, 0, 1)
 }
 
 func gridDown(t time.Time) time.Time {

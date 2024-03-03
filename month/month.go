@@ -5,7 +5,6 @@ package month
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -217,7 +216,6 @@ func (m Month) grid() string {
 			m.date.Year(), m.date.Month(), i, 0, 0, 0, 0,
 			m.date.Location(),
 		)); ok {
-			log.Println("in", m.date.Format("2006-01-02"), "matched", i)
 			day = s.Export(day.Copy())
 		}
 		// Render today.
