@@ -4,14 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.3.0]
 ### Added
 - Add keyword display feature.
 - Add holiday display feature.
 - Ability to style days which have notes written differently.
 
 ### Changed
-- Changed color configuration settings to general style configuration.
+- BREAKING CHANGE: Color configuration settings are now style configuration settings.
 - Left and Right in year view can now move across to the next month.
 
 ## [0.2.0]
