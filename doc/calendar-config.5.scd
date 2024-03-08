@@ -35,10 +35,10 @@ empty lines.
 *HolidayLists*
 	Used to specify one or more files containing a list of important dates and
 	colors to signify them in the calendar. Each line in a holiday file should
-	be a date in either the format: 2006-02-28 or 02-28 followed by a space and
-	then a color. Optionally, the color may then be followed with a space and a
-	message which will display for the holiday. See below for how to specify a
-	color code.
+	be a date in either the format: 2006-02-28 or 02-28 or even just 28
+	followed by a space and then a color. Optionally, the color may then be
+	followed with a space and a message which will display for the holiday. See
+	below for how to specify a color code.
 
 	Default: none
 

@@ -21,6 +21,9 @@ func (hs Holidays) Match(t time.Time) (Holiday, bool) {
 		if strings.TrimPrefix(h.Date, "0000-") == t.Format("01-02") {
 			return h, true
 		}
+		if strings.TrimPrefix(h.Date, "0000-00-") == t.Format("02") {
+			return h, true
+		}
 	}
 	return Holiday{}, false
 }
@@ -75,20 +78,41 @@ func parse(r io.Reader) ([]Holiday, error) {
 			)
 		}
 
-		location := time.Now().Location()
-		date, err := time.ParseInLocation("2006-01-02", parts[0], location)
+		date, err := parseDate(parts[0])
 		if err != nil {
-			date, err = time.ParseInLocation("01-02", parts[0], location)
+			return nil, fmt.Errorf("invalid date %v: %v", parts[0], err)
 		}
 		color := parts[1]
 		message := strings.Join(parts[2:], " ")
 
 		holidays = append(holidays, Holiday{
-			Date:    date.Format("2006-01-02"),
+			Date:    date,
 			Color:   color,
 			Message: message,
 		})
 	}
 
 	return holidays, scanner.Err()
+}
+
+func parseDate(s string) (string, error) {
+	location := time.Now().Location()
+	date, err := time.ParseInLocation("2006-01-02", s, location)
+	if err == nil {
+		return date.Format("2006-01-02"), nil
+	}
+	date, err = time.ParseInLocation("01-02", s, location)
+	if err == nil {
+		// Year will be 0000.
+		return date.Format("2006-01-02"), nil
+	}
+
+	date, err = time.ParseInLocation("02", s, location)
+	// Year and month will be 0000-00.
+	d := strings.ReplaceAll(
+		date.Format("2006-01-02"),
+		"0000-01",
+		"0000-00",
+	)
+	return d, err
 }
