@@ -1,7 +1,10 @@
 # `calendar`
 
 A TUI version of the classic `cal` program.
-![calendar screenshot](calendar.png)
+
+![calendar screenshot 1](01.png)
+
+![calendar screenshot 2](02.png)
 
 ## Controls
 Using the arrow keys, hjkl, or the mouse you can navigate around the calendar.
